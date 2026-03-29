@@ -8,6 +8,7 @@ export class BibleService {
   private bn: Bible = bnBible as Bible;
   private en: Bible = enBible as Bible;
 
+  //* get random verse
   getRandomVerse() {
     const books = this.bn?.Book;
 
@@ -30,5 +31,31 @@ export class BibleService {
       text_bn: bnVerse.Verse,
       text_en: enVerse.Verse,
     };
+  }
+
+  //* get daily verse
+  getDailyVerse(lang: string = 'both') {
+    const verse = this.getRandomVerse();
+
+    const today = new Date().toISOString().split('T')[0];
+
+    if (lang === 'bn') {
+      return {
+        date: today,
+        verseId: verse.verseId,
+        text: verse.text_bn,
+      };
+    }
+
+    if (lang === 'en') {
+      return {
+        date: today,
+        verseId: verse.verseId,
+        text: verse.text_en,
+      };
+    }
+
+    //? for both
+    return verse;
   }
 }
