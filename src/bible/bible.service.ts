@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import bnBible from '../assets/bible-bn.json';
 import enBible from '../assets/bible-en.json';
 import { Bible } from './bible.types';
+import { BOOK_NAMES_BN, BOOK_NAMES_EN } from './bible.constants';
 
 @Injectable()
 export class BibleService {
@@ -44,8 +45,14 @@ export class BibleService {
 
     const decoded = this.decodeVerseId(bnVerse.Verseid);
 
+    const bookNameEn = BOOK_NAMES_EN[bookIndex];
+    const bookNameBn = BOOK_NAMES_BN[decoded.bookIndex];
+
+    // console.log(bookNameBn, bookNameEn, decoded, bookIndex);
+
     return {
-      book: decoded.book,
+      book_bn: bookNameBn,
+      book_en: bookNameEn,
       chapter: decoded.chapter,
       verse: decoded.verse,
       text_bn: bnVerse.Verse,
@@ -62,7 +69,8 @@ export class BibleService {
     if (lang === 'bn') {
       return {
         date: today,
-        book: verse.book,
+        book_bn: verse.book_bn,
+        book_en: verse.book_en,
         chapter: verse.chapter,
         verse: verse.verse,
         text: verse.text_bn,
@@ -72,7 +80,8 @@ export class BibleService {
     if (lang === 'en') {
       return {
         date: today,
-        book: verse.book,
+        book_bn: verse.book_bn,
+        book_en: verse.book_en,
         chapter: verse.chapter,
         verse: verse.verse,
         text: verse.text_en,
