@@ -65,15 +65,31 @@ export class BibleService {
 
   //* Language filter (separate responsibility)
   private formatByLang(data: any, lang: string) {
+    const { text_bn, text_en, book_bn, book_en, ...rest } = data;
+
     if (lang === 'bn') {
-      return { ...data, text: data.text_bn };
+      return {
+        ...rest,
+        book: book_bn,
+        text: data.text_bn,
+      };
     }
 
     if (lang === 'en') {
-      return { ...data, text: data.text_en };
+      return {
+        ...rest,
+        book: book_en,
+        text: data.text_en,
+      };
     }
 
-    return data; // both
+    return {
+      ...rest,
+      text_bn,
+      text_en,
+      book_bn,
+      book_en,
+    };
   }
 
   //* get random verse
