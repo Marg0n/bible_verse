@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "ESNext", //"nodenext",
     "moduleResolution": "bundler", //"nodenext",
+    "types": ["node", "jest"],
     "resolvePackageJsonExports": true,
     "esModuleInterop": true,
     "isolatedModules": true,
