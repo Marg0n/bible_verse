@@ -4,6 +4,6 @@ import { BibleService } from './bible.service';
 
 @Module({
   controllers: [BibleController],
-  providers: [BibleService]
+  providers: [BibleService],
 })
 export class BibleModule {}
