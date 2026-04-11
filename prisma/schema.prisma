@@ -12,23 +12,28 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id             String   @id @default(uuid())
-  streakCount    Int      @default(0)
-  lastActiveDate DateTime?
-  theme          String   @default("light") 
-  createdAt      DateTime @default(now())
+enum Theme {
+  light
+  dark
+}
 
-  favorites      Favorite[]
+model User {
+  id             String    @id @default(uuid())
+  streakCount    Int       @default(0)
+  lastActiveDate DateTime?
+  theme          Theme     @default(light)
+  createdAt      DateTime  @default(now())
+
+  favorites Favorite[]
 }
 
 model Favorite {
   id        String   @id @default(uuid())
   userId    String
-  verseId   String   //? from your JSON (important)
+  verseId   String //? from your JSON (important)
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@unique([userId, verseId]) //? prevent duplicate favorites
 }
