@@ -23,13 +23,17 @@ export class FavoritesService {
   }
 
   removeFavorites(userId: string, verseId: string) {
-    return this.prisma.favorite.delete({
-      where: {
-        userId_verseId: {
-          userId,
-          verseId,
+    return this.prisma.favorite
+      .delete({
+        where: {
+          userId_verseId: {
+            userId,
+            verseId,
+          },
         },
-      },
-    });
+      })
+      .catch(() => {
+        return { message: 'Favorite not found' };
+      });
   }
 }
