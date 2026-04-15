@@ -13,7 +13,7 @@ import { FavoritesService } from './favorites.service';
 export class FavoritesController {
   constructor(private readonly favoriteService: FavoritesService) {}
 
-  //? Add favorite
+  //* Add favorite
   @Post()
   addFavorites(
     @Body('userId') userId: string,
@@ -26,17 +26,17 @@ export class FavoritesController {
     return this.favoriteService.addFavorites(userId, verseId);
   }
 
-  //? Get favorites
+  //* Get favorites
   @Get()
   getFavorites(@Query('userId') userId: string) {
     if (!userId) {
-      return { message: 'userId is requred' };
+      return { message: 'userId is required' };
     }
 
     return this.favoriteService.getFavorites(userId);
   }
 
-  //? Delete favorites
+  //* Delete favorites
   @Delete()
   @Delete(':userId/:verseId')
   removeFavorites(
