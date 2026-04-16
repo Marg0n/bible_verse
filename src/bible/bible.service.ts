@@ -63,6 +63,17 @@ export class BibleService {
     };
   }
 
+  //* Get verse by verse ID
+  getVerseById(verseId: string) {
+    const decoded = this.decodeVerseId(verseId);
+
+    return this.getVerseByIndex(
+      decoded.bookIndex,
+      decoded.chapterIndex,
+      decoded.verseIndex,
+    );
+  }
+
   //* Language filter (separate responsibility)
   private formatByLang(data: any, lang: string) {
     const { text_bn, text_en, book_bn, book_en, ...rest } = data;

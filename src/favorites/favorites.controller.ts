@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 
 @Controller('favorites')
@@ -27,8 +19,8 @@ export class FavoritesController {
   }
 
   //* Get favorites
-  @Get()
-  getFavorites(@Query('userId') userId: string) {
+  @Get(':userId')
+  getFavorites(@Param('userId') userId: string) {
     if (!userId) {
       return { message: 'userId is required' };
     }
@@ -37,7 +29,6 @@ export class FavoritesController {
   }
 
   //* Delete favorites
-  @Delete()
   @Delete(':userId/:verseId')
   removeFavorites(
     @Param('userId') userId: string,
