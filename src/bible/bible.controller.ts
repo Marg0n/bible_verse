@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Controller, Get, Query } from '@nestjs/common';
 import { BibleService } from './bible.service';
-import { LanguageDto } from './dto/language.dto';
+import { LanguageDto } from './dto/languageDto.dto';
 
 @Controller('bible')
 export class BibleController {
