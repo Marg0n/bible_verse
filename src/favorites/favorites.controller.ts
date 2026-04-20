@@ -23,6 +23,9 @@ export class FavoritesController {
   //* Delete favorites
   @Delete(':userId/:verseId')
   removeFavorites(@Param() dto: RemoveFavoriteDto) {
-    return this.favoriteService.removeFavorites(dto.userId, dto.verseId);
+    return this.favoriteService.removeFavorites(
+      dto.userId as string,
+      dto.verseId as string,
+    );
   }
 }

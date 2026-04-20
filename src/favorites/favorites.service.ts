@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { BibleService } from '../bible/bible.service';
 
@@ -9,41 +13,56 @@ export class FavoritesService {
     private bibleService: BibleService,
   ) {}
 
-  addFavorites(userId: string, verseId: string) {
-    return this.prisma.favorite.create({
-      data: {
-        userId,
-        verseId,
-      },
-    });
+  async addFavorites(userId: string, verseId: string) {
+    try {
+      return await this.prisma.favorite.create({
+        data: {
+          userId,
+          verseId,
+        },
+      });
+    } catch (err) {
+      console.log('add favorites: ', err);
+      throw new BadRequestException('Already added to favorites');
+    }
   }
 
   async getFavorites(userId: string) {
-    const favorites = await this.prisma.favorite.findMany({
-      where: {
-        userId,
-      },
-    });
+    try {
+      const favorites = await this.prisma.favorite.findMany({
+        where: {
+          userId,
+        },
+      });
 
-    //? returns decoded verse
-    return favorites.map((fav) => ({
-      ...fav,
-      verse: this.bibleService.getVerseById(fav.id),
-    }));
+      //? returns decoded verse
+      return favorites.map((fav) => ({
+        ...fav,
+        verse: this.bibleService.getVerseById(fav.id),
+      }));
+    } catch (err) {
+      console.log('get fav: ', err);
+      throw new NotFoundException('Getting issues to get favorites');
+    }
   }
 
-  removeFavorites(userId: string, verseId: string) {
-    return this.prisma.favorite
-      .delete({
-        where: {
-          userId_verseId: {
-            userId,
-            verseId,
+  async removeFavorites(userId: string, verseId: string) {
+    try {
+      return await this.prisma.favorite
+        .delete({
+          where: {
+            userId_verseId: {
+              userId,
+              verseId,
+            },
           },
-        },
-      })
-      .catch(() => {
-        return { message: 'Favorite not found' };
-      });
+        })
+        .catch(() => {
+          return { message: 'Favorite not found' };
+        });
+    } catch (error) {
+      console.log('remove fav: ', error);
+      throw new NotFoundException('Favorite not found');
+    }
   }
 }

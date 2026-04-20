@@ -4,7 +4,7 @@
 import { Injectable } from '@nestjs/common';
 import bnBible from '../assets/bible-bn.json';
 import enBible from '../assets/bible-en.json';
-import { Bible } from './bible.types';
+import { Bible } from './interface/bible.types';
 import { BOOK_NAMES_BN, BOOK_NAMES_EN } from './bible.constants';
 
 @Injectable()

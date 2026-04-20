@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "module": "ESNext", //"nodenext",
-    "moduleResolution": "bundler", //"nodenext",
+    "module": "CommonJS", //"ESNext", //"nodenext","CommonJS"
+    "moduleResolution": "node", // "bundler", //"nodenext", //"node"
     "types": ["node", "jest"],
-    "resolvePackageJsonExports": true,
+    // "resolvePackageJsonExports": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "declaration": true,
@@ -13,7 +13,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "ES2023",
     "strict": true,
-    "ignoreDeprecations": "6.0",
+    // "ignoreDeprecations": "6.0",
     "sourceMap": true,
     "outDir": "./dist",
     "paths": {

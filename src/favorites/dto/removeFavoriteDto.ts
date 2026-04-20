@@ -1,11 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { AddFavoriteDto } from './addFavoriteDto';
 
-export class RemoveFavoriteDto {
-  @IsString()
-  @IsNotEmpty()
-  userId!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  verseId!: string;
-}
+export class RemoveFavoriteDto extends PartialType(AddFavoriteDto) {}
