@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Theme } from '@prisma/client';
+import { CreateUserDto } from './dto/createUserDto.dto';
 
 @Controller('user')
 export class UserController {
@@ -11,13 +12,13 @@ export class UserController {
     return this.userService.createUser();
   }
 
-  @Get()
-  getUser(@Param('id') id: string) {
-    return this.userService.getUser(id);
+  @Get(':id')
+  getUser(@Param() dto: CreateUserDto) {
+    return this.userService.getUser(dto.userId);
   }
 
   @Post(':id/theme')
-  updateTheme(@Param('id') id: string, @Body('theme') theme: Theme) {
-    return this.userService.updateTheme(id, theme);
+  updateTheme(@Param() dto: CreateUserDto, @Body('theme') theme: Theme) {
+    return this.userService.updateTheme(dto.userId, theme);
   }
 }

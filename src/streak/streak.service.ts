@@ -36,8 +36,8 @@ export class StreakService {
           lastActiveDate: new Date(),
         },
       });
-    } catch (err) {
-      console.log('update streak: ', err);
+    } catch (error) {
+      console.log('update streak: ', error);
       throw new BadRequestException('Error at updating the streak');
     }
   }

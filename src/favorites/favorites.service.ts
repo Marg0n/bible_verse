@@ -3,8 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { BibleService } from '../bible/bible.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class FavoritesService {
@@ -21,8 +21,8 @@ export class FavoritesService {
           verseId,
         },
       });
-    } catch (err) {
-      console.log('add favorites: ', err);
+    } catch (error) {
+      console.log('add favorites: ', error);
       throw new BadRequestException('Already added to favorites');
     }
   }
@@ -40,8 +40,8 @@ export class FavoritesService {
         ...fav,
         verse: this.bibleService.getVerseById(fav.id),
       }));
-    } catch (err) {
-      console.log('get fav: ', err);
+    } catch (error) {
+      console.log('get fav: ', error);
       throw new NotFoundException('Getting issues to get favorites');
     }
   }
