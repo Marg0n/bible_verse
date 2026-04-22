@@ -29,13 +29,18 @@ export class StreakService {
         else if (difference > 1) streak = 1;
       }
 
-      return this.prisma.user.update({
+      const result = this.prisma.user.update({
         where: { id: userId },
         data: {
           streakCount: streak,
           lastActiveDate: new Date(),
         },
       });
+
+      return {
+        success: true,
+        data: result,
+      };
     } catch (error) {
       console.log('update streak: ', error);
       throw new BadRequestException('Error at updating the streak');

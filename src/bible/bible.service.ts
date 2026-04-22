@@ -117,7 +117,12 @@ export class BibleService {
 
     const verse = this.getVerseByIndex(bookIndex, chapterIndex, verseIndex);
 
-    return this.formatByLang(verse, lang);
+    const result = this.formatByLang(verse, lang);
+
+    return {
+      success: true,
+      data: result,
+    };
   }
 
   //* get daily verse
@@ -137,12 +142,17 @@ export class BibleService {
 
     const verse = this.getVerseByIndex(bookIndex, chapterIndex, verseIndex);
 
-    return this.formatByLang(
+    const result = this.formatByLang(
       {
         date: today,
         ...verse,
       },
       lang,
     );
+
+    return {
+      success: true,
+      data: result,
+    };
   }
 }

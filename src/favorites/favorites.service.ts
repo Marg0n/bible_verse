@@ -13,20 +13,27 @@ export class FavoritesService {
     private bibleService: BibleService,
   ) {}
 
+  //* adding a favorite
   async addFavorites(userId: string, verseId: string) {
     try {
-      return await this.prisma.favorite.create({
+      const result = await this.prisma.favorite.create({
         data: {
           userId,
           verseId,
         },
       });
+
+      return {
+        success: true,
+        data: result,
+      };
     } catch (error) {
       console.log('add favorites: ', error);
       throw new BadRequestException('Already added to favorites');
     }
   }
 
+  //* getting favorites
   async getFavorites(userId: string) {
     try {
       const favorites = await this.prisma.favorite.findMany({
@@ -36,30 +43,37 @@ export class FavoritesService {
       });
 
       //? returns decoded verse
-      return favorites.map((fav) => ({
+      const result = favorites.map((fav) => ({
         ...fav,
         verse: this.bibleService.getVerseById(fav.id),
       }));
+
+      return {
+        success: true,
+        data: result,
+      };
     } catch (error) {
       console.log('get fav: ', error);
       throw new NotFoundException('Getting issues to get favorites');
     }
   }
 
+  //* remove a favorites
   async removeFavorites(userId: string, verseId: string) {
     try {
-      return await this.prisma.favorite
-        .delete({
-          where: {
-            userId_verseId: {
-              userId,
-              verseId,
-            },
+      const result = await this.prisma.favorite.delete({
+        where: {
+          userId_verseId: {
+            userId,
+            verseId,
           },
-        })
-        .catch(() => {
-          return { message: 'Favorite not found' };
-        });
+        },
+      });
+
+      return {
+        success: true,
+        data: result,
+      };
     } catch (error) {
       console.log('remove fav: ', error);
       throw new NotFoundException('Favorite not found');

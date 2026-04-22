@@ -8,9 +8,14 @@ export class UserService {
 
   createUser() {
     try {
-      return this.prisma.user.create({
+      const result = this.prisma.user.create({
         data: {},
       });
+
+      return {
+        success: true,
+        data: result,
+      };
     } catch (error) {
       console.log('create user:', error);
       throw new BadRequestException('Creating user failed');
@@ -19,10 +24,15 @@ export class UserService {
 
   getUser(id: string) {
     try {
-      return this.prisma.user.findUnique({
+      const result = this.prisma.user.findUnique({
         where: { id },
         include: { favorites: true },
       });
+
+      return {
+        success: true,
+        data: result,
+      };
     } catch (error) {
       console.log('get user:', error);
       throw new BadRequestException('Problem getting user');
@@ -31,10 +41,15 @@ export class UserService {
 
   updateTheme(userId: string, theme: Theme) {
     try {
-      return this.prisma.user.update({
+      const result = this.prisma.user.update({
         where: { id: userId },
         data: { theme },
       });
+
+      return {
+        success: true,
+        data: result,
+      };
     } catch (error) {
       console.log('Theme:', error);
       throw new BadRequestException('Theme updating failed');
