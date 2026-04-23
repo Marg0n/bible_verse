@@ -9,6 +9,7 @@ import { FavoritesModule } from './favorites/favorites.module';
 import { StreakService } from './streak/streak.service';
 import { StreakController } from './streak/streak.controller';
 import { StreakModule } from './streak/streak.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { StreakModule } from './streak/streak.module';
     UserModule,
     FavoritesModule,
     StreakModule,
+    AuthModule,
   ],
   controllers: [AppController, StreakController],
   providers: [AppService, PrismaService, StreakService],
