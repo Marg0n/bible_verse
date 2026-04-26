@@ -9,6 +9,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
   ) {}
 
+  //* Create user by registration
   async createAnonymousUser() {
     try {
       const user = await this.prisma.user.create({

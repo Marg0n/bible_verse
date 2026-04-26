@@ -6,9 +6,10 @@ import { Theme } from '@prisma/client';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  createUser() {
+  //* Create user data by Admin
+  async createUser() {
     try {
-      const result = this.prisma.user.create({
+      const result = await this.prisma.user.create({
         data: {},
       });
 
@@ -22,6 +23,7 @@ export class UserService {
     }
   }
 
+  //* Get user data
   getUser(id: string) {
     try {
       const result = this.prisma.user.findUnique({
@@ -39,6 +41,7 @@ export class UserService {
     }
   }
 
+  //* Update theme data
   updateTheme(userId: string, theme: Theme) {
     try {
       const result = this.prisma.user.update({

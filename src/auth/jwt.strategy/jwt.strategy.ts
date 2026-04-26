@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { JwtPayload } from '../interfaces/auth.interface';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
@@ -11,8 +10,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
-    const userData = await payload?.sub;
+  validate(payload: JwtPayload) {
+    const userData = payload.sub;
     return { userId: userData };
+    /**
+     * const user = await this.usersService.findById(payload.sub);
+
+        if (!user) {
+          throw new UnauthorizedException();
+        }
+
+        return user;
+     */
   }
 }
