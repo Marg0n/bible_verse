@@ -1,4 +1,4 @@
-import { Body, Controller, Get } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { StreakService } from './streak.service';
 import { UpdateStreakDto } from './dto/updateStreakDto.dto';
 
@@ -6,7 +6,7 @@ import { UpdateStreakDto } from './dto/updateStreakDto.dto';
 export class StreakController {
   constructor(private readonly streakService: StreakService) {}
 
-  @Get()
+  @Post()
   updateStreak(@Body() dto: UpdateStreakDto) {
     return this.streakService.updateStreak(dto.userId);
   }
