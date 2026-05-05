@@ -28,7 +28,11 @@ export class UserService {
     try {
       const result = this.prisma.user.findUnique({
         where: { id },
-        include: { favorites: true },
+        include: {
+          favorites: true,
+          streakCount: true,
+          theme: true,
+        },
       });
 
       return {
