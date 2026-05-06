@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly jwtservice: JwtService,
+    private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -16,7 +16,7 @@ export class AuthService {
         data: {},
       });
 
-      const token = this.jwtservice.sign({
+      const token = this.jwtService.sign({
         sub: user.id, //? sub = subject (standard JWT field))
       });
 
