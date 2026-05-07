@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "module": "CommonJS", //"ESNext", //"nodenext","CommonJS"
-    "moduleResolution": "node", // "bundler", //"nodenext", //"node"
+    "module": "ESNext", //"ESNext", //"nodenext","CommonJS"
+    "moduleResolution": "bundler", // "bundler", //"nodenext", //"node"
     "types": ["node", "jest"],
     // "resolvePackageJsonExports": true,
     "esModuleInterop": true,
+    "allowImportingTsExtensions": false,
     "isolatedModules": true,
     "declaration": true,
     "removeComments": true,
