@@ -7,10 +7,12 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   //* Create user data by Admin
-  async createUser() {
+  async createUser(email: string) {
     try {
       const result = await this.prisma.user.create({
-        data: {},
+        data: {
+          email,
+        },
       });
 
       return {
@@ -30,8 +32,6 @@ export class UserService {
         where: { id },
         include: {
           favorites: true,
-          streakCount: true,
-          theme: true,
         },
       });
 

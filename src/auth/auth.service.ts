@@ -10,7 +10,7 @@ export class AuthService {
   ) {}
 
   //* Create user by registration
-  async createAnonymousUser(email: string) {
+  async register(email: string) {
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -20,6 +20,7 @@ export class AuthService {
 
       const token = this.jwtService.sign({
         sub: user.id, //? sub = subject (standard JWT field))
+        email: user.email,
       });
 
       const result = {
@@ -38,7 +39,7 @@ export class AuthService {
   }
 
   //* Login
-  async userLogin(email: string) {
+  async login(email: string) {
     try {
       const user = await this.prisma.user.findUnique({
         where: {
