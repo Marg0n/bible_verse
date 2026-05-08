@@ -26,9 +26,9 @@ export class UserService {
   }
 
   //* Get user data
-  getUser(id: string) {
+  async getUser(id: string) {
     try {
-      const result = this.prisma.user.findUnique({
+      const result = await this.prisma.user.findUnique({
         where: { id },
         include: {
           favorites: true,
@@ -46,9 +46,9 @@ export class UserService {
   }
 
   //* Update theme data
-  updateTheme(userId: string, theme: Theme) {
+  async updateTheme(userId: string, theme: Theme) {
     try {
-      const result = this.prisma.user.update({
+      const result = await this.prisma.user.update({
         where: { id: userId },
         data: { theme },
       });
