@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BibleModule } from './bible/bible.module';
-import { PrismaService } from './prisma/prisma.service';
-import { PrismaModule } from './prisma/prisma.module';
-import { UserModule } from './user/user.module';
-import { FavoritesModule } from './favorites/favorites.module';
-import { StreakService } from './streak/streak.service';
-import { StreakController } from './streak/streak.controller';
-import { StreakModule } from './streak/streak.module';
 import { AuthModule } from './auth/auth.module';
+import { BibleModule } from './bible/bible.module';
+import { FavoritesModule } from './favorites/favorites.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { StreakModule } from './streak/streak.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -19,8 +17,13 @@ import { AuthModule } from './auth/auth.module';
     FavoritesModule,
     StreakModule,
     AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
   ],
-  controllers: [AppController, StreakController],
-  providers: [AppService, PrismaService, StreakService],
+  controllers: [AppController],
+  providers: [AppService],
+  // controllers: [AppController, StreakController],
+  // providers: [AppService, PrismaService, StreakService],
 })
 export class AppModule {}
