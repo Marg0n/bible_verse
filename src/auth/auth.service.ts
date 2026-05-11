@@ -12,9 +12,11 @@ export class AuthService {
   //* Create user by registration
   async register(email: string) {
     try {
+      const mail = email.toLowerCase();
+
       const user = await this.prisma.user.create({
         data: {
-          email,
+          email: mail,
         },
       });
 
@@ -41,9 +43,11 @@ export class AuthService {
   //* Login
   async login(email: string) {
     try {
+      const mail = email.toLowerCase();
+
       const user = await this.prisma.user.findUnique({
         where: {
-          email,
+          email: mail,
         },
       });
 
@@ -53,6 +57,7 @@ export class AuthService {
 
       const token = this.jwtService.sign({
         sub: user.id, //? sub = subject (standard JWT field))
+        email: user.email,
       });
 
       const result = {

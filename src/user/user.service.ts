@@ -9,9 +9,11 @@ export class UserService {
   //* Create user data by Admin
   async createUser(email: string) {
     try {
+      const mail = email.toLowerCase();
+
       const result = await this.prisma.user.create({
         data: {
-          email,
+          email: mail,
         },
       });
 
