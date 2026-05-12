@@ -7,13 +7,14 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   //* Create user data by Admin
-  async createUser(email: string) {
+  async createUser(email: string, password: string) {
     try {
       const mail = email.toLowerCase();
 
       const result = await this.prisma.user.create({
         data: {
           email: mail,
+          password,
         },
       });
 

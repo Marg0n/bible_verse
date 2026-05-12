@@ -10,13 +10,14 @@ export class AuthService {
   ) {}
 
   //* Create user by registration
-  async register(email: string) {
+  async register(email: string, password: string) {
     try {
       const mail = email.toLowerCase();
 
       const user = await this.prisma.user.create({
         data: {
           email: mail,
+          password,
         },
       });
 
