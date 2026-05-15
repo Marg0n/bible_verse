@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { UserService } from './user.service';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { Theme } from '@prisma/client';
-import { CreateUserDto } from './dto/createUserDto.dto';
+import { RequestWithUser } from '../auth/interfaces/request-with-user';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
-import { GetUserDto } from './dto/getUserDto.dto';
+import { CreateUserDto } from './dto/createUserDto.dto';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
@@ -15,14 +15,14 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  getUser(@Param() dto: GetUserDto) {
-    return this.userService.getUser(dto.userId);
+  @Get()
+  getUser(@Req() req: RequestWithUser) {
+    return this.userService.getUser(req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/theme')
-  updateTheme(@Param() dto: GetUserDto, @Body('theme') theme: Theme) {
-    return this.userService.updateTheme(dto.userId, theme);
+  @Post('/theme')
+  updateTheme(@Req() req: RequestWithUser, @Body('theme') theme: Theme) {
+    return this.userService.updateTheme(req.user.userId, theme);
   }
 }
