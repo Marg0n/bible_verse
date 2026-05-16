@@ -5,13 +5,14 @@ import {
   Get,
   Param,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { GetFavoriteDto } from './dto/getFavoriteDto.dto';
 import { AddFavoriteDto } from './dto/addFavoriteDto';
 import { RemoveFavoriteDto } from './dto/removeFavoriteDto';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
+import { RequestWithUser } from '../auth/interfaces/request-with-user';
 
 @Controller('favorites')
 export class FavoritesController {
@@ -20,23 +21,26 @@ export class FavoritesController {
   //* Add favorite
   @UseGuards(JwtAuthGuard)
   @Post()
-  addFavorites(@Body() dto: AddFavoriteDto) {
-    return this.favoriteService.addFavorites(dto.userId, dto.verseId);
+  addFavorites(@Body() dto: AddFavoriteDto, @Req() req: RequestWithUser) {
+    return this.favoriteService.addFavorites(req.user.userId, dto.verseId);
   }
 
   //* Get favorites
   @UseGuards(JwtAuthGuard)
-  @Get(':userId')
-  getFavorites(@Param() dto: GetFavoriteDto) {
-    return this.favoriteService.getFavorites(dto.userId);
+  @Get()
+  getFavorites(@Req() req: RequestWithUser) {
+    return this.favoriteService.getFavorites(req.user.userId);
   }
 
   //* Delete favorites
   @UseGuards(JwtAuthGuard)
-  @Delete(':userId/:verseId')
-  removeFavorites(@Param() dto: RemoveFavoriteDto) {
+  @Delete(':verseId')
+  removeFavorites(
+    @Param() dto: RemoveFavoriteDto,
+    @Req() req: RequestWithUser,
+  ) {
     return this.favoriteService.removeFavorites(
-      dto.userId as string,
+      req.user.userId,
       dto.verseId as string,
     );
   }
