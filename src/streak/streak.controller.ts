@@ -1,5 +1,5 @@
 import { Controller, Post, Req, UseGuards } from '@nestjs/common';
-import { RequestWithUser } from '../auth/interfaces/request-with-user';
+import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { StreakService } from './streak.service';
 

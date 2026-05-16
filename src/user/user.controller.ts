@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { Theme } from '@prisma/client';
-import { RequestWithUser } from '../auth/interfaces/request-with-user';
+import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { UserService } from './user.service';

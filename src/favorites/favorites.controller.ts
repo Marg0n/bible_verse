@@ -8,11 +8,11 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { FavoritesService } from './favorites.service';
+import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
+import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { AddFavoriteDto } from './dto/addFavoriteDto';
 import { RemoveFavoriteDto } from './dto/removeFavoriteDto';
-import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
-import { RequestWithUser } from '../auth/interfaces/request-with-user';
+import { FavoritesService } from './favorites.service';
 
 @Controller('favorites')
 export class FavoritesController {
