@@ -10,8 +10,7 @@ import {
 } from '@nestjs/common';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
-import { AddFavoriteDto } from './dto/addFavoriteDto';
-import { RemoveFavoriteDto } from './dto/removeFavoriteDto';
+import { FavoriteDto } from './dto/favoriteDto';
 import { FavoritesService } from './favorites.service';
 
 @Controller('favorites')
@@ -21,7 +20,7 @@ export class FavoritesController {
   //* Add favorite
   @UseGuards(JwtAuthGuard)
   @Post()
-  addFavorites(@Body() dto: AddFavoriteDto, @Req() req: RequestWithUser) {
+  addFavorites(@Body() dto: FavoriteDto, @Req() req: RequestWithUser) {
     return this.favoriteService.addFavorites(req.user.userId, dto.verseId);
   }
 
@@ -35,13 +34,7 @@ export class FavoritesController {
   //* Delete favorites
   @UseGuards(JwtAuthGuard)
   @Delete(':verseId')
-  removeFavorites(
-    @Param() dto: RemoveFavoriteDto,
-    @Req() req: RequestWithUser,
-  ) {
-    return this.favoriteService.removeFavorites(
-      req.user.userId,
-      dto.verseId as string,
-    );
+  removeFavorites(@Param() dto: FavoriteDto, @Req() req: RequestWithUser) {
+    return this.favoriteService.removeFavorites(req.user.userId, dto.verseId);
   }
 }
