@@ -5,10 +5,10 @@ import {
   Get,
   Param,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
-import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { AuthUser } from '../auth/interfaces/auth-user.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { FavoriteDto } from './dto/favoriteDto';
 import { FavoritesService } from './favorites.service';
@@ -20,21 +20,21 @@ export class FavoritesController {
   //* Add favorite
   @UseGuards(JwtAuthGuard)
   @Post()
-  addFavorites(@Body() dto: FavoriteDto, @Req() req: RequestWithUser) {
-    return this.favoriteService.addFavorites(req.user.userId, dto.verseId);
+  addFavorites(@Body() dto: FavoriteDto, @CurrentUser() user: AuthUser) {
+    return this.favoriteService.addFavorites(user.userId, dto.verseId);
   }
 
   //* Get favorites
   @UseGuards(JwtAuthGuard)
   @Get()
-  getFavorites(@Req() req: RequestWithUser) {
-    return this.favoriteService.getFavorites(req.user.userId);
+  getFavorites(@CurrentUser() user: AuthUser) {
+    return this.favoriteService.getFavorites(user.userId);
   }
 
   //* Delete favorites
   @UseGuards(JwtAuthGuard)
   @Delete(':verseId')
-  removeFavorites(@Param() dto: FavoriteDto, @Req() req: RequestWithUser) {
-    return this.favoriteService.removeFavorites(req.user.userId, dto.verseId);
+  removeFavorites(@Param() dto: FavoriteDto, @CurrentUser() user: AuthUser) {
+    return this.favoriteService.removeFavorites(user.userId, dto.verseId);
   }
 }

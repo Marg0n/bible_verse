@@ -1,5 +1,6 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
-import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
+import { Controller, Post, UseGuards } from '@nestjs/common';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { AuthUser } from '../auth/interfaces/auth-user.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { StreakService } from './streak.service';
 
@@ -9,7 +10,7 @@ export class StreakController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  updateStreak(@Req() req: RequestWithUser) {
-    return this.streakService.updateStreak(req.user.userId);
+  updateStreak(@CurrentUser() user: AuthUser) {
+    return this.streakService.updateStreak(user.userId);
   }
 }
