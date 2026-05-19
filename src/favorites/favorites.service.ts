@@ -29,7 +29,7 @@ export class FavoritesService {
       };
     } catch (error) {
       console.log('add favorites: ', error);
-      throw new BadRequestException('Getting issues to get favorites  ');
+      throw new BadRequestException('Verse already added to favorites');
     }
   }
 
