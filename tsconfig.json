@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "CommonJS", //"ESNext", //"nodenext","CommonJS"
-    "moduleResolution": "node", // "bundler", //"nodenext", //"node"
+    "module": "nodenext", //"ESNext", //"nodenext","CommonJS"
+    "moduleResolution": "nodenext", // "bundler", //"nodenext", //"node"
     "types": ["node", "jest"],
     // "resolvePackageJsonExports": true,
     "esModuleInterop": true,
