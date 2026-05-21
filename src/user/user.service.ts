@@ -7,26 +7,26 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   //* Create user data by Admin
-  async createUser(email: string, password: string) {
-    try {
-      const mail = email.toLowerCase();
+  // async createUser(email: string, password: string) {
+  //   try {
+  //     const mail = email.toLowerCase();
 
-      const result = await this.prisma.user.create({
-        data: {
-          email: mail,
-          password,
-        },
-      });
+  //     const result = await this.prisma.user.create({
+  //       data: {
+  //         email: mail,
+  //         password,
+  //       },
+  //     });
 
-      return {
-        success: true,
-        data: result,
-      };
-    } catch (error) {
-      console.log('create user:', error);
-      throw new BadRequestException('Creating user failed');
-    }
-  }
+  //     return {
+  //       success: true,
+  //       data: result,
+  //     };
+  //   } catch (error) {
+  //     console.log('create user:', error);
+  //     throw new BadRequestException('Creating user failed');
+  //   }
+  // }
 
   //* Get user data
   async getUser(id: string) {
