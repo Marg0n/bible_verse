@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
-import { Theme } from '@prisma/client';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AuthUser } from '../auth/interfaces/auth-user.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
+import { UpdateThemeDto } from './dto/updateThemeDto.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -22,7 +22,10 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/theme')
-  updateTheme(@CurrentUser() user: AuthUser, @Body('theme') theme: Theme) {
-    return this.userService.updateTheme(user.userId, theme);
+  updateTheme(
+    @CurrentUser() user: AuthUser,
+    @Body('theme') theme: UpdateThemeDto,
+  ) {
+    return this.userService.updateTheme(user.userId, theme.theme);
   }
 }
