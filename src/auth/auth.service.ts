@@ -65,6 +65,41 @@ export class AuthService {
     }
   }
 
+  //* Token generation helper function
+  private async generateTokens(userId: string, email: string) {
+    const payload = {
+      sub: userId,
+      email,
+    };
+
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '15m',
+    });
+
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: '7d',
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  //* Hashed Refresh Token to db
+  private async updateRefreshToken(userId: string, refreshToken: string) {
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        refreshToken: hashedRefreshToken,
+      },
+    });
+  }
+
   //* Login
   async login(email: string, password: string) {
     try {
