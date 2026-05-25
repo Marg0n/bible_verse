@@ -37,17 +37,18 @@ export class AuthService {
       });
 
       //? Create token
-      const token = this.jwtService.sign({
-        sub: user.id, //? sub = subject (standard JWT field))
-        email: user.email,
-      });
+      const tokens = await this.generateTokens(user.id, user.email);
+
+      //? Update refresh token to db
+      await this.updateRefreshToken(user.id, tokens.refreshToken);
 
       //? Removing password from respnse
       const { password: _, ...safeUser } = user;
 
       const result = {
         user: safeUser,
-        access_token: token,
+        access_token: tokens.accessToken,
+        refresh_token: tokens.refreshToken,
       };
 
       return {
@@ -68,7 +69,7 @@ export class AuthService {
   //* Token generation helper function
   private async generateTokens(userId: string, email: string) {
     const payload = {
-      sub: userId,
+      sub: userId, //? sub = subject (standard JWT field))
       email,
     };
 
@@ -124,17 +125,18 @@ export class AuthService {
       }
 
       //? Token
-      const token = this.jwtService.sign({
-        sub: user.id, //? sub = subject (standard JWT field))
-        email: user.email,
-      });
+      const tokens = await this.generateTokens(user.id, user.email);
 
-      //* Remove password
+      //? Update refresh token to db
+      await this.updateRefreshToken(user.id, tokens.refreshToken);
+
+      //? Remove password
       const { password: _, ...safeUser } = user;
 
       const result = {
         user: safeUser,
-        access_token: token,
+        access_token: tokens.accessToken,
+        refresh_token: tokens.refreshToken,
       };
 
       return {
