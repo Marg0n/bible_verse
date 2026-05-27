@@ -1,14 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
+import { JwtPayload } from './interfaces/auth.interface';
+import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
   ) {}
 
   //* Create user by registration
@@ -151,6 +159,55 @@ export class AuthService {
       }
 
       throw new BadRequestException('User Login failed');
+    }
+  }
+
+  //* Refresh Token
+  async refreshToken(refreshToken: string) {
+    try {
+      //? Check validity/ verify token
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(
+        refreshToken,
+        {
+          // secret: process.env.JWT_REFRESH_SECRET,
+          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        },
+      );
+
+      //? Find user
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: payload.sub,
+        },
+      });
+
+      if (!user || !user.refreshToken) {
+        throw new UnauthorizedException('Unauthorized user');
+      }
+
+      //! Compare hashed token
+      const isMatch = await bcrypt.compare(refreshToken, user.refreshToken);
+
+      if (!isMatch) {
+        throw new UnauthorizedException('Invalid user');
+      }
+
+      //! Generate new token
+      const tokens = await this.generateTokens(user.id, user.email);
+
+      //! Rotate refresh token to DB
+      await this.updateRefreshToken(user.id, tokens.refreshToken);
+
+      return {
+        success: true,
+        data: {
+          access_token: tokens.accessToken,
+          refresh_token: tokens.refreshToken,
+        },
+      };
+    } catch (error) {
+      console.log('Refresh token error:', error);
+      throw new UnauthorizedException('Invalid refresh token');
     }
   }
 }
