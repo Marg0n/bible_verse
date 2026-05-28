@@ -210,4 +210,25 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
+
+  //* Logout
+  async logout(userId: string) {
+    try {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          refreshToken: null,
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Logged out successfully',
+      };
+    } catch (error) {
+      console.log('logout error:', error);
+
+      throw new BadRequestException('Internal error');
+    }
+  }
 }
