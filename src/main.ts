@@ -16,7 +16,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Bible Verse API')
-    .setDescription('Backend API for Bangla Bible Verse Widget')
+    .setDescription(
+      'Backend API for Bangla & english Bible Verse Widget and chrome extension.',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();
