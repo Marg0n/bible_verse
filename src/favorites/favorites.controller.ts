@@ -12,12 +12,14 @@ import type { AuthUser } from '../auth/interfaces/auth-user.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { FavoriteDto } from './dto/favoriteDto';
 import { FavoritesService } from './favorites.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('favorites')
 export class FavoritesController {
   constructor(private readonly favoriteService: FavoritesService) {}
 
   //* Add favorite
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   addFavorites(@Body() dto: FavoriteDto, @CurrentUser() user: AuthUser) {
@@ -25,6 +27,7 @@ export class FavoritesController {
   }
 
   //* Get favorites
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
   getFavorites(@CurrentUser() user: AuthUser) {
@@ -32,6 +35,7 @@ export class FavoritesController {
   }
 
   //* Delete favorites
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':verseId')
   removeFavorites(@Param() dto: FavoriteDto, @CurrentUser() user: AuthUser) {

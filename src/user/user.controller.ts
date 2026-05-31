@@ -4,6 +4,7 @@ import type { AuthUser } from '../auth/interfaces/auth-user.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { UpdateThemeDto } from './dto/updateThemeDto.dto';
 import { UserService } from './user.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
@@ -14,12 +15,14 @@ export class UserController {
   //   return this.userService.createUser(dto.email, dto.password);
   // }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
   getUser(@CurrentUser() user: AuthUser) {
     return this.userService.getUser(user.userId);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch('/theme')
   updateTheme(

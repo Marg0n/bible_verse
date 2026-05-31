@@ -3,11 +3,13 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AuthUser } from '../auth/interfaces/auth-user.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { StreakService } from './streak.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('streak')
 export class StreakController {
   constructor(private readonly streakService: StreakService) {}
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   updateStreak(@CurrentUser() user: AuthUser) {
