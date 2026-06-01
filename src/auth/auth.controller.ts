@@ -1,46 +1,93 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
+import { CurrentUser } from './decorators/current-user.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
-import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
-import { CurrentUser } from './decorators/current-user.decorator';
+import { RegisterDto } from './dto/register.dto';
+import { AuthResponseDto } from './dto/swaggerResponse.dto';
 import type { AuthUser } from './interfaces/auth-user.interface';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  //* Registration
   @ApiOperation({
     summary: 'Register new user',
   })
   @ApiBody({
     type: RegisterDto,
   })
+  @ApiCreatedResponse({
+    description: 'User registered successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Email already exists',
+  })
+  @ApiResponse({
+    type: AuthResponseDto,
+  })
   @Post('register')
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto.email, dto.password);
   }
 
+  //* Login
   @ApiOperation({
     summary: 'Login user',
   })
   @ApiBody({
     type: RegisterDto,
   })
+  @HttpCode(200)
+  @ApiOkResponse({
+    description: 'User login successful',
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid credentials',
+  })
+  @ApiOkResponse({
+    type: AuthResponseDto,
+  })
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto.email!, dto.password!);
   }
 
+  //* Refresh token
+  @HttpCode(200)
+  @ApiOkResponse({
+    description: 'Token refreshed successfully',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid refresh token',
+  })
   @Post('refresh')
   refreshToken(@Body() dto: RefreshTokenDto) {
     return this.authService.refreshToken(dto.refreshToken);
   }
 
+  //* Logout
   @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @ApiOkResponse({
+    description: 'Logged out successfully',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+  })
   @Post('logout')
   logout(@CurrentUser() user: AuthUser) {
     return this.authService.logout(user.userId);

@@ -61,6 +61,7 @@ export class AuthService {
 
       return {
         success: true,
+        description: 'User registered successfully',
         data: result,
       };
     } catch (error) {
@@ -149,6 +150,7 @@ export class AuthService {
 
       return {
         success: true,
+        description: 'User login successful',
         data: result,
       };
     } catch (error) {
