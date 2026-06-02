@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Theme } from '@prisma/client';
 
@@ -38,9 +42,18 @@ export class UserService {
         },
       });
 
+      if (!result) {
+        throw new NotFoundException('User not found');
+      }
+
+      //? Destructure password and refreshToken out, and gather everything else into "sanitizedUser"
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, refreshToken, ...sanitizedUser } = result;
+
       return {
         success: true,
-        data: result,
+        description: 'User data successfully retrieved.',
+        data: sanitizedUser,
       };
     } catch (error) {
       console.log('get user:', error);
@@ -58,6 +71,7 @@ export class UserService {
 
       return {
         success: true,
+        description: 'Theme updated successfully.',
         data: result,
       };
     } catch (error) {

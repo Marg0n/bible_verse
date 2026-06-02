@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -14,7 +21,7 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
 import { RegisterDto } from './dto/register.dto';
-import { AuthResponseDto } from './dto/swaggerResponse.dto';
+import { AuthResponseDto } from './dto/swaggerAuthResponse.dto';
 import type { AuthUser } from './interfaces/auth-user.interface';
 import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
 
@@ -51,15 +58,13 @@ export class AuthController {
   @ApiBody({
     type: RegisterDto,
   })
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'User login successful',
+    type: AuthResponseDto,
   })
   @ApiBadRequestResponse({
     description: 'Invalid credentials',
-  })
-  @ApiOkResponse({
-    type: AuthResponseDto,
   })
   @Post('login')
   login(@Body() dto: LoginDto) {
@@ -67,7 +72,7 @@ export class AuthController {
   }
 
   //* Refresh token
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'Token refreshed successfully',
   })
@@ -81,7 +86,7 @@ export class AuthController {
 
   //* Logout
   @UseGuards(JwtAuthGuard)
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'Logged out successfully',
   })
