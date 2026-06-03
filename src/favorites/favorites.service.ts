@@ -25,6 +25,7 @@ export class FavoritesService {
 
       return {
         success: true,
+        description: 'Added to Favorites',
         data: result,
       };
     } catch (error) {
@@ -45,11 +46,12 @@ export class FavoritesService {
       //? returns decoded verse
       const result = favorites.map((fav) => ({
         ...fav,
-        verse: this.bibleService.getVerseById(fav.id),
+        verse: this.bibleService.getVerseById(fav.verseId),
       }));
 
       return {
         success: true,
+        description: 'Favorites data successfully retrieved',
         data: result,
       };
     } catch (error) {
@@ -72,6 +74,7 @@ export class FavoritesService {
 
       return {
         success: true,
+        description: 'Favorites data successfully removed.',
         data: result,
       };
     } catch (error) {
