@@ -72,6 +72,9 @@ export class AuthController {
   }
 
   //* Refresh token
+  @ApiOperation({
+    summary: 'Refresh user token',
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'Token refreshed successfully',
@@ -86,6 +89,9 @@ export class AuthController {
 
   //* Logout
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Logout user',
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'Logged out successfully',

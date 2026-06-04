@@ -2,12 +2,18 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Theme } from '@prisma/client';
 
 //* Create a DTO for the Favorite model if you haven't already
-class FavoriteDto {
+class UserFavoriteDto {
   @ApiProperty({ example: 'f3b3b4b5-c6d7-4e8f-9a0b-1c2d3e4f5g6h' })
   id!: string;
 
-  @ApiProperty({ example: 'item_123', description: 'ID of the favorited item' })
-  itemId!: string;
+  @ApiProperty({
+    example: 'f3b3b4b5-c6d7-4e8f-9a0b-1c2d3e4f5g6h',
+    description: 'ID of the favorite item',
+  })
+  userId!: string;
+
+  @ApiProperty({ example: '18110009', description: 'ID of the favorite item' })
+  verseId!: string;
 
   @ApiProperty({ example: '2026-06-02T12:34:56.789Z' })
   createdAt!: Date;
@@ -36,8 +42,11 @@ class UserDataDto {
   @ApiProperty({ example: '2026-06-02T18:30:00.000Z' })
   updatedAt!: Date;
 
-  @ApiProperty({ type: [FavoriteDto], description: 'List of user favorites' })
-  favorites!: FavoriteDto[];
+  @ApiProperty({
+    type: [UserFavoriteDto],
+    description: 'List of user favorites',
+  })
+  favorites!: UserFavoriteDto[];
 }
 
 //* The main wrapper DTO that your service returns
