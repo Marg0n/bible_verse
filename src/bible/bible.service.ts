@@ -12,7 +12,7 @@ export class BibleService {
   private bn: Bible = bnBible as Bible;
   private en: Bible = enBible as Bible;
 
-  //* Decode VerseId by Verseid = Book + Chapter + Verse (all encoded)
+  //* Decode VerseId by VerseId = Book + Chapter + Verse (all encoded)
   private decodeVerseId(id: string) {
     const book = parseInt(id.slice(0, 2), 10);
     const chapter = parseInt(id.slice(2, 5), 10);
