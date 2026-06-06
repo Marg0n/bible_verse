@@ -8,6 +8,7 @@ import { FavoritesModule } from './favorites/favorites.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { StreakModule } from './streak/streak.module';
 import { UserModule } from './user/user.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserModule } from './user/user.module';
     FavoritesModule,
     StreakModule,
     AuthModule,
+    RedisModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
