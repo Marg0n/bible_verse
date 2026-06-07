@@ -12,16 +12,17 @@ import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
+    //! Must be first!
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     BibleModule,
     PrismaModule,
     UserModule,
     FavoritesModule,
     StreakModule,
     AuthModule,
-    RedisModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    // RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
