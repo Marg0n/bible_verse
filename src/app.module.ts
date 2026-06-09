@@ -22,7 +22,7 @@ import { RedisModule } from './redis/redis.module';
     FavoritesModule,
     StreakModule,
     AuthModule,
-    // RedisModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
