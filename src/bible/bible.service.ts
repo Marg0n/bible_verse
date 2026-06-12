@@ -6,9 +6,12 @@ import bnBible from '../assets/bible-bn.json';
 import enBible from '../assets/bible-en.json';
 import { Bible } from './interface/bible.types';
 import { BOOK_NAMES_BN, BOOK_NAMES_EN } from './bible.constants';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class BibleService {
+  constructor(private redisService: RedisService) {}
+
   private bn: Bible = bnBible as Bible;
   private en: Bible = enBible as Bible;
 
@@ -126,8 +129,20 @@ export class BibleService {
   }
 
   //* get daily verse
-  getDailyVerse(lang: string = 'both') {
+  async getDailyVerse(lang: string = 'both') {
     const today = new Date().toISOString().split('T')[0];
+
+    const redis = this.redisService.getClient();
+
+    //? Create cache key
+    const cacheKey = `daily-verse:${today}:${lang}`;
+
+    //? Check cache
+    const cached = await redis.get(cacheKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
 
     const books = this.bn.Book;
 
@@ -150,9 +165,16 @@ export class BibleService {
       lang,
     );
 
-    return {
+    const response = {
       success: true,
       data: result,
     };
+
+    //! If cache miss Generate verse.
+    await redis.set(cacheKey, JSON.stringify(response), {
+      EX: 86400, //? Expires in 60 × 60 × 24 = 24 hours
+    });
+
+    return response;
   }
 }
