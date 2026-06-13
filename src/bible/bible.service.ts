@@ -4,7 +4,7 @@
 import { Injectable } from '@nestjs/common';
 import bnBible from '../assets/bible-bn.json';
 import enBible from '../assets/bible-en.json';
-import { Bible } from './interface/bible.types';
+import { Bible, VerseData } from './interface/bible.types';
 import { BOOK_NAMES_BN, BOOK_NAMES_EN } from './bible.constants';
 import { RedisService } from '../redis/redis.service';
 
@@ -78,7 +78,7 @@ export class BibleService {
   }
 
   //* Language filter (separate responsibility)
-  private formatByLang(data: any, lang: string) {
+  private formatByLang(data: VerseData, lang: string) {
     const { text_bn, text_en, book_bn, book_en, ...rest } = data;
 
     if (lang === 'bn') {
