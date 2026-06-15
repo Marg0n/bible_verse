@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Injectable } from '@nestjs/common';
 import bnBible from '../assets/bible-bn.json';
 import enBible from '../assets/bible-en.json';
-import { Bible, VerseData } from './interface/bible.types';
-import { BOOK_NAMES_BN, BOOK_NAMES_EN } from './bible.constants';
 import { RedisService } from '../redis/redis.service';
+import { BOOK_NAMES_BN, BOOK_NAMES_EN } from './bible.constants';
+import { Bible, VerseData } from './interface/bible.types';
 
 @Injectable()
 export class BibleService {
@@ -141,8 +139,11 @@ export class BibleService {
     const cached = await redis.get(cacheKey);
 
     if (cached) {
+      console.log('CACHE HIT');
+
       return JSON.parse(cached);
     }
+    console.log('CACHE MISS');
 
     const books = this.bn.Book;
 
