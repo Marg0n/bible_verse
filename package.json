@@ -1,7 +1,7 @@
 {
   "name": "bible_verse",
   "version": "0.0.1",
-  "description": "",
+  "description": "Backend API for Bible Verse Widget and Chrome Extension",
   "author": "Sokhorio Margon D' Costa",
   "private": true,
   "license": "Apache-2.0",
