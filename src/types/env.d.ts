@@ -8,5 +8,8 @@ declare namespace NodeJS {
     REDIS_URL: string;
     BASE_URL: string;
     NODE_ENV: 'development' | 'production' | 'test';
+    POSTGRES_USER: string;
+    POSTGRES_PASSWORD: number;
+    POSTGRES_DB: string;
   }
 }
