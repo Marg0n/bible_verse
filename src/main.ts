@@ -1,3 +1,6 @@
+// Copyright 2026 Sokhorio Margon D' Costa
+// Licensed under the Apache License, Version 2.0
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';

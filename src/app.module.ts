@@ -1,3 +1,6 @@
+// Copyright 2026 Sokhorio Margon D' Costa
+// Licensed under the Apache License, Version 2.0
+
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
