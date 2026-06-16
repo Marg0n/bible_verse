@@ -118,12 +118,34 @@ Check out a few resources that may come in handy when working with NestJS:
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support). -->
 
+## Roadmaps
+
+- [ ] Push notifications for daily reminders
+- [ ] User accounts + cloud sync
+- [ ] Search verses by keyword
+- [ ] AI-powered verse recommendations
+- [ ] AI bot that explains the verse
+- [ ] Performance tuning (memoization, caching)
+- [ ] Continuous backend improvements
+- [ ] Web extension development
+- [ ] Release mobile app version (Android and IOS)
+
 ## Project Devs
 
-Developed by [Sokhorio Margon D' Costa](https://github.com/MargOn)   
+<!-- Developed by [Sokhorio Margon D' Costa](https://github.com/Marg0n)    -->
+<a href="https://github.com/Marg0n/bible_verse/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Marg0n/bible_verse" alt="contributors" title="contributors"/>
+</a>
 
-## License
+## Related to the Project
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-<br/>
-This project is [Apache Licensed](https://github.com/Marg0n/bible_verse/blob/main/LICENSE)
+These are the related projects for this particular backend:
+
+- #### [Web Extension](https://github.com/Marg0n/bible_verse_web_extension)
+- #### [Mobile App](https://github.com/Marg0n/)
+
+## [License](https://github.com/Marg0n/bible_verse?tab=notice-ov-file)
+
+<!-- Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE). -->
+<!-- <br/> -->
+This project is [Apache Licensed](https://github.com/Marg0n/bible_verse/blob/main/LICENSE).
