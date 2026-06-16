@@ -126,4 +126,4 @@ Developed by [Sokhorio Margon D' Costa](https://github.com/MargOn)
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 <br/>
-This project is [Apache License]()
+This project is [Apache Licensed](https://github.com/Marg0n/bible_verse/blob/main/LICENSE)
