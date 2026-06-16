@@ -144,8 +144,9 @@ These are the related projects for this particular backend:
 - #### [Web Extension](https://github.com/Marg0n/bible_verse_web_extension)
 - #### [Mobile App](https://github.com/Marg0n/)
 
-## [License](https://github.com/Marg0n/bible_verse?tab=notice-ov-file)
+## License
 
 <!-- Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE). -->
-<!-- <br/> -->
+[Copyright](https://github.com/Marg0n/bible_verse/blob/dev/NOTICE.md) is being reserved by the [Author](https://github.com/Marg0n/bible_verse/blob/main/AUTHORS).
+<br/>
 This project is [Apache Licensed](https://github.com/Marg0n/bible_verse/blob/main/LICENSE).
