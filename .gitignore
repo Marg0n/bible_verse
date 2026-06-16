@@ -41,10 +41,20 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.local
+.env.*.local
 
 # temp directory
 .temp
 .tmp
+
+# Docker overrides (local specific)
+docker-compose.override.yml
+docker-compose.local.yml
+docker-compose.*.local.yml
+
+# Docker build artifacts
+*.log
+tmp/
 
 # Runtime data
 pids
