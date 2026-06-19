@@ -5,10 +5,14 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Theme } from '@prisma/client';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private redisService: RedisService,
+  ) {}
 
   //* Create user data by Admin
   // async createUser(email: string, password: string) {
@@ -32,9 +36,28 @@ export class UserService {
   //   }
   // }
 
-  //* Get user data
+  //* Get user data (Redis used)
   async getUser(id: string) {
     try {
+      //? Cache Key
+      const cacheKey = `user:${id}`;
+
+      //? Checking Cache First
+      const redis = this.redisService.getClient();
+
+      const cached = await redis.get(cacheKey);
+
+      if (cached) {
+        console.log('USER CACHE HIT');
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return JSON.parse(cached);
+      }
+
+      //? test cache
+      console.log('USER CACHE MISS');
+
+      //? Query Database Only on Cache Miss
       const result = await this.prisma.user.findUnique({
         where: { id },
         include: {
@@ -46,15 +69,22 @@ export class UserService {
         throw new NotFoundException('User not found');
       }
 
-      //? Destructure password and refreshToken out, and gather everything else into "sanitizedUser"
+      //! Destructure password and refreshToken out, and gather everything else into "sanitizedUser"
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, refreshToken, ...sanitizedUser } = result;
 
-      return {
+      const response = {
         success: true,
         description: 'User data successfully retrieved.',
         data: sanitizedUser,
       };
+
+      //? Cache The Response
+      await redis.set(cacheKey, JSON.stringify(response), {
+        EX: 300, //? 5 minutes
+      });
+
+      return response;
     } catch (error) {
       console.log('get user:', error);
       throw new BadRequestException('Problem getting user');

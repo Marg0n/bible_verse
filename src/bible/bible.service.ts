@@ -126,7 +126,7 @@ export class BibleService {
     };
   }
 
-  //* get daily verse
+  //* get daily verse (Redis used)
   async getDailyVerse(lang: string = 'both') {
     const today = new Date().toISOString().split('T')[0];
 
