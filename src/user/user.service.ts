@@ -91,13 +91,17 @@ export class UserService {
     }
   }
 
-  //* Update theme data
+  //* Update theme data (Redis used)
   async updateTheme(userId: string, theme: Theme) {
     try {
       const result = await this.prisma.user.update({
         where: { id: userId },
         data: { theme },
       });
+
+      const redis = this.redisService.getClient();
+
+      await redis.del(`user:${userId}`); //? This forces the next GET request to fetch fresh data.
 
       return {
         success: true,
