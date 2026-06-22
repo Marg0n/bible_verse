@@ -142,7 +142,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 These are the related projects for this particular backend:
 
 - #### [Web Extension](https://github.com/Marg0n/bible_verse_web_extension)
-- #### [Mobile App](https://github.com/Marg0n/)
+- #### [Mobile App](https://github.com/Marg0n/bible_verse_mobile_app?tab=readme-ov-file)
 
 ## License
 
