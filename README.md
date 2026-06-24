@@ -149,4 +149,4 @@ These are the related projects for this particular backend:
 <!-- Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE). -->
 [Copyright](https://github.com/Marg0n/bible_verse/blob/dev/NOTICE.md) is being reserved by the [Author](https://github.com/Marg0n/bible_verse/blob/main/AUTHORS).
 <br/>
-This project is [Apache Licensed](https://github.com/Marg0n/bible_verse/blob/main/LICENSE).
+<!-- This project is [Apache Licensed](https://github.com/Marg0n/bible_verse/blob/main/LICENSE). -->
