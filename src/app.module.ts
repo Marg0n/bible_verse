@@ -1,5 +1,9 @@
-// Copyright 2026 Sokhorio Margon D' Costa
-// Licensed under the Apache License, Version 2.0
+/*
+ * Copyright (c) 2026 Sokhorio Margon D' Costa. All Rights Reserved.
+ *
+ * This repository is for portfolio demonstration purposes only.
+ * No part of this code may be used, copied, or distributed for commercial or private projects without explicit written permission.
+ */
 
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
