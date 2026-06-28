@@ -13,6 +13,7 @@ export class BibleService {
   private bn: Bible = bnBible as Bible;
   private en: Bible = enBible as Bible;
 
+  //* Nestjs logger
   private readonly logger = new Logger(BibleService.name);
 
   //* Decode VerseId by VerseId = Book + Chapter + Verse (all encoded)
