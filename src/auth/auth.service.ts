@@ -212,7 +212,7 @@ export class AuthService {
         },
       };
     } catch (error) {
-      this.logger.log('Refresh token error:', error);
+      this.logger.error('Refresh token error:', error);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
@@ -232,7 +232,7 @@ export class AuthService {
         message: 'Logged out successfully',
       };
     } catch (error) {
-      this.logger.log('logout error:', error);
+      this.logger.error('logout error:', error);
 
       throw new BadRequestException('Internal error');
     }
