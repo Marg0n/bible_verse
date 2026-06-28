@@ -48,14 +48,14 @@ export class UserService {
       const cached = await redis.get(cacheKey);
 
       if (cached) {
-        console.log('USER CACHE HIT');
+        console.log(`USER CACHE HIT: ${cacheKey}`);
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return JSON.parse(cached);
       }
 
       //? test cache
-      console.log('USER CACHE MISS');
+      console.log(`USER CACHE MISS: ${cacheKey}`);
 
       //? Query Database Only on Cache Miss
       const result = await this.prisma.user.findUnique({
