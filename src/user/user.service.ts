@@ -97,11 +97,14 @@ export class UserService {
       const result = await this.prisma.user.update({
         where: { id: userId },
         data: { theme },
+        select: {
+          theme: true, //? Only return the theme field
+        },
       });
 
       const redis = this.redisService.getClient();
 
-      await redis.del(`user:${userId}`); //? This forces the next GET request to fetch fresh data.
+      await redis.del(`user:${userId}`); //? This forces the invalidate cache to force fresh fetch on next GET.
 
       return {
         success: true,
