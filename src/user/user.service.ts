@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,6 +14,9 @@ export class UserService {
     private prisma: PrismaService,
     private redisService: RedisService,
   ) {}
+
+  //* Nestjs logger
+  private readonly logger = new Logger(UserService.name);
 
   //* Create user data by Admin
   // async createUser(email: string, password: string) {
@@ -31,7 +35,7 @@ export class UserService {
   //       data: result,
   //     };
   //   } catch (error) {
-  //     console.log('create user:', error);
+  //     this.logger.error('create user:', error);
   //     throw new BadRequestException('Creating user failed');
   //   }
   // }
@@ -48,14 +52,14 @@ export class UserService {
       const cached = await redis.get(cacheKey);
 
       if (cached) {
-        console.log('USER CACHE HIT');
+        this.logger.log(`USER CACHE HIT: ${cacheKey}`);
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return JSON.parse(cached);
       }
 
       //? test cache
-      console.log('USER CACHE MISS');
+      this.logger.log(`USER CACHE MISS: ${cacheKey}`);
 
       //? Query Database Only on Cache Miss
       const result = await this.prisma.user.findUnique({
@@ -86,7 +90,7 @@ export class UserService {
 
       return response;
     } catch (error) {
-      console.log('get user:', error);
+      this.logger.error('get user: ', error);
       throw new BadRequestException('Problem getting user');
     }
   }
@@ -112,7 +116,7 @@ export class UserService {
         data: result,
       };
     } catch (error) {
-      console.log('Theme:', error);
+      this.logger.error('Theme: ', error);
       throw new BadRequestException('Theme updating failed');
     }
   }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import bnBible from '../assets/bible-bn.json';
 import enBible from '../assets/bible-en.json';
 import { RedisService } from '../redis/redis.service';
@@ -12,6 +12,9 @@ export class BibleService {
 
   private bn: Bible = bnBible as Bible;
   private en: Bible = enBible as Bible;
+
+  //* Nestjs logger
+  private readonly logger = new Logger(BibleService.name);
 
   //* Decode VerseId by VerseId = Book + Chapter + Verse (all encoded)
   private decodeVerseId(id: string) {
@@ -128,54 +131,58 @@ export class BibleService {
 
   //* get daily verse (Redis used)
   async getDailyVerse(lang: string = 'both') {
-    const today = new Date().toISOString().split('T')[0];
+    try {
+      const today = new Date().toISOString().split('T')[0];
 
-    const redis = this.redisService.getClient();
+      const redis = this.redisService.getClient();
 
-    //? Create cache key
-    const cacheKey = `daily-verse:${today}:${lang}`;
+      //? Create cache key
+      const cacheKey = `daily-verse:${today}:${lang}`;
 
-    //? Check cache
-    const cached = await redis.get(cacheKey);
+      //? Check cache
+      const cached = await redis.get(cacheKey);
 
-    if (cached) {
-      console.log('CACHE HIT');
+      if (cached) {
+        this.logger.log(`BIBLE CACHE HIT: ${cacheKey}`);
 
-      return JSON.parse(cached);
+        return JSON.parse(cached);
+      }
+      this.logger.log(`BIBLE CACHE HIT: ${cacheKey}`);
+
+      const books = this.bn.Book;
+
+      const hash = this.hashDate(today);
+
+      const bookIndex = hash % books.length;
+
+      const chapterIndex = hash % books[bookIndex].Chapter.length;
+
+      const verseIndex =
+        hash % books[bookIndex].Chapter[chapterIndex].Verse.length;
+
+      const verse = this.getVerseByIndex(bookIndex, chapterIndex, verseIndex);
+
+      const result = this.formatByLang(
+        {
+          date: today,
+          ...verse,
+        },
+        lang,
+      );
+
+      const response = {
+        success: true,
+        data: result,
+      };
+
+      //! If cache miss Generate verse.
+      await redis.set(cacheKey, JSON.stringify(response), {
+        EX: 86400, //? Expires in 60 × 60 × 24 = 24 hours
+      });
+
+      return response;
+    } catch (error) {
+      this.logger.error('Daily verse error: ', error);
     }
-    console.log('CACHE MISS');
-
-    const books = this.bn.Book;
-
-    const hash = this.hashDate(today);
-
-    const bookIndex = hash % books.length;
-
-    const chapterIndex = hash % books[bookIndex].Chapter.length;
-
-    const verseIndex =
-      hash % books[bookIndex].Chapter[chapterIndex].Verse.length;
-
-    const verse = this.getVerseByIndex(bookIndex, chapterIndex, verseIndex);
-
-    const result = this.formatByLang(
-      {
-        date: today,
-        ...verse,
-      },
-      lang,
-    );
-
-    const response = {
-      success: true,
-      data: result,
-    };
-
-    //! If cache miss Generate verse.
-    await redis.set(cacheKey, JSON.stringify(response), {
-      EX: 86400, //? Expires in 60 × 60 × 24 = 24 hours
-    });
-
-    return response;
   }
 }

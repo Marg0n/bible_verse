@@ -5,10 +5,6 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import type { AuthUser } from '../auth/interfaces/auth-user.interface';
-import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
-import { StreakService } from './streak.service';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -16,9 +12,13 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthUser } from '../auth/interfaces/auth-user.interface';
+import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { StreakResponseDto } from './dto/streakResponse.dto';
+import { StreakService } from './streak.service';
 
-@ApiBearerAuth()
+@ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 @Controller('streak')
 export class StreakController {

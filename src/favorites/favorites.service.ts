@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { BibleService } from '../bible/bible.service';
@@ -12,6 +13,9 @@ export class FavoritesService {
     private prisma: PrismaService,
     private bibleService: BibleService,
   ) {}
+
+  //* Nestjs logger
+  private readonly logger = new Logger(FavoritesService.name);
 
   //* adding a favorite
   async addFavorites(userId: string, verseId: string) {
@@ -29,7 +33,7 @@ export class FavoritesService {
         data: result,
       };
     } catch (error) {
-      console.log('add favorites: ', error);
+      this.logger.error('add favorites: ', error);
       throw new BadRequestException('Verse already added to favorites');
     }
   }
@@ -55,7 +59,7 @@ export class FavoritesService {
         data: result,
       };
     } catch (error) {
-      console.log('get fav: ', error);
+      this.logger.error('get fav: ', error);
       throw new NotFoundException('Getting issues to get favorites');
     }
   }
@@ -78,7 +82,7 @@ export class FavoritesService {
         data: result,
       };
     } catch (error) {
-      console.log('remove fav: ', error);
+      this.logger.error('remove fav: ', error);
       throw new NotFoundException('Favorite not found');
     }
   }

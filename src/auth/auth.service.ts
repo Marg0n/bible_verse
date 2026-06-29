@@ -2,6 +2,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -18,6 +19,9 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
   ) {}
+
+  //* Nestjs logger
+  private readonly logger = new Logger(AuthService.name);
 
   //* Create user by registration
   async register(email: string, password: string) {
@@ -65,7 +69,7 @@ export class AuthService {
         data: result,
       };
     } catch (error) {
-      console.error('Register error: ', error);
+      this.logger.error('Register error: ', error);
 
       if (error instanceof BadRequestException) {
         throw error;
@@ -83,12 +87,14 @@ export class AuthService {
     };
 
     const accessToken = await this.jwtService.signAsync(payload, {
-      secret: process.env.JWT_SECRET,
+      // secret: process.env.JWT_SECRET,
+      secret: this.configService.getOrThrow<string>('JWT_SECRET'),
       expiresIn: '15m',
     });
 
     const refreshToken = await this.jwtService.signAsync(payload, {
-      secret: process.env.JWT_REFRESH_SECRET,
+      // secret: process.env.JWT_REFRESH_SECRET,
+      secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
       expiresIn: '7d',
     });
 
@@ -154,7 +160,7 @@ export class AuthService {
         data: result,
       };
     } catch (error) {
-      console.error('Login error: ', error);
+      this.logger.error('Login error: ', error);
 
       if (error instanceof BadRequestException) {
         throw error;
@@ -208,7 +214,7 @@ export class AuthService {
         },
       };
     } catch (error) {
-      console.log('Refresh token error:', error);
+      this.logger.error('Refresh token error:', error);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
@@ -228,7 +234,7 @@ export class AuthService {
         message: 'Logged out successfully',
       };
     } catch (error) {
-      console.log('logout error:', error);
+      this.logger.error('logout error:', error);
 
       throw new BadRequestException('Internal error');
     }

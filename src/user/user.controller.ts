@@ -7,11 +7,6 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import type { AuthUser } from '../auth/interfaces/auth-user.interface';
-import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
-import { UpdateThemeDto } from './dto/updateThemeDto.dto';
-import { UserService } from './user.service';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -19,9 +14,14 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthUser } from '../auth/interfaces/auth-user.interface';
+import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { GetUserResponseDto } from './dto/swaggerUserResponseDto.dto';
+import { UpdateThemeDto } from './dto/updateThemeDto.dto';
+import { UserService } from './user.service';
 
-@ApiBearerAuth() //? Applies JWT lock icon to the whole controller instead of repeating it per method
+@ApiBearerAuth('JWT-auth') //? Applies JWT lock icon to the whole controller instead of repeating it per method
 @UseGuards(JwtAuthGuard)
 @Controller('user')
 export class UserController {

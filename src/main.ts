@@ -9,10 +9,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  //? Global pipes
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, //? strips unknown fields
@@ -21,13 +23,28 @@ async function bootstrap() {
     }),
   );
 
+  //? This helps Express report the real client IP instead of the proxy's IP.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+  app.getHttpAdapter().getInstance().set('trust proxy', true);
+
+  //? Globally observes every request and gets logged
+  app.useGlobalInterceptors(new LoggingInterceptor());
+
+  //? Swagger config
   const config = new DocumentBuilder()
     .setTitle('Bible Verse API')
     .setDescription(
       'Backend API for Bangla & english Bible Verse Widget and chrome extension.',
     )
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'JWT-auth',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
