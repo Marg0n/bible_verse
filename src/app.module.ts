@@ -16,12 +16,22 @@ import { PrismaModule } from './prisma/prisma.module';
 import { StreakModule } from './streak/streak.module';
 import { UserModule } from './user/user.module';
 import { RedisModule } from './redis/redis.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     //! Must be first!
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000, //? ttl = Time To Live = 60 seconds
+          limit: 100, //? limit = 100 means limit = 100 per 60s
+        },
+      ],
     }),
     BibleModule,
     PrismaModule,
@@ -32,7 +42,13 @@ import { RedisModule } from './redis/redis.module';
     RedisModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
   // controllers: [AppController, StreakController],
   // providers: [AppService, PrismaService, StreakService],
 })
