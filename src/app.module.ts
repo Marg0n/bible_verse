@@ -29,7 +29,7 @@ import { APP_GUARD } from '@nestjs/core';
       throttlers: [
         {
           ttl: 60000, //? ttl = Time To Live = 60 seconds
-          limit: 100, //? limit = 100 means limit = 100 per 60s
+          limit: 100, //? limit = 100 means limit = 100 per 60s from the same IP
         },
       ],
     }),
