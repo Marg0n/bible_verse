@@ -25,6 +25,7 @@ import { RegisterDto } from './dto/register.dto';
 import { AuthResponseDto } from './dto/swaggerAuthResponse.dto';
 import type { AuthUser } from './interfaces/auth-user.interface';
 import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Authentication')
 @ApiBearerAuth('JWT-auth')
@@ -48,6 +49,12 @@ export class AuthController {
   @ApiResponse({
     type: AuthResponseDto,
   })
+  @Throttle({
+    default: {
+      limit: 3,
+      ttl: 60000, //? 60 * 10000 = 60s
+    },
+  })
   @Post('register')
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto.email, dto.password);
@@ -67,6 +74,12 @@ export class AuthController {
   })
   @ApiBadRequestResponse({
     description: 'Invalid credentials',
+  })
+  @Throttle({
+    default: {
+      limit: 5,
+      ttl: 60000,
+    },
   })
   @Post('login')
   login(@Body() dto: LoginDto) {
