@@ -10,6 +10,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { ThrottlerFilter } from './common/filters/throttler.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +23,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  //? Throttlers common filter Register globally
+  app.useGlobalFilters(new ThrottlerFilter());
 
   //? This helps Express report the real client IP instead of the proxy's IP.
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
