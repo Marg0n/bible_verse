@@ -6,7 +6,9 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('bible')
 export class BibleController {
   constructor(private readonly bibleService: BibleService) {}

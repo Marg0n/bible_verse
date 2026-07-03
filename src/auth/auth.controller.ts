@@ -97,6 +97,12 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Invalid refresh token',
   })
+  @Throttle({
+    default: {
+      limit: 10,
+      ttl: 60000,
+    },
+  })
   @Post('refresh')
   refreshToken(@Body() dto: RefreshTokenDto) {
     return this.authService.refreshToken(dto.refreshToken);
