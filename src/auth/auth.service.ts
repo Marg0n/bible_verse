@@ -34,7 +34,12 @@ export class AuthService {
       });
 
       if (existingUser) {
-        throw new BadRequestException('Email already exist');
+        // throw new BadRequestException('Email already exist');
+        this.logger.warn(`${mail} already exists!`);
+        return {
+          success: true,
+          message: 'Email already exists!',
+        };
       }
 
       //? Hashing
@@ -129,7 +134,12 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new BadRequestException('Invalid credentials');
+        // throw new BadRequestException('Invalid credentials');
+        this.logger.warn(`Invalid credentials for ${mail}`);
+        return {
+          success: true,
+          message: 'Invalid user or credentials',
+        };
       }
 
       //? Compare password

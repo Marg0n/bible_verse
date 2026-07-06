@@ -99,7 +99,7 @@ export class AuthController {
   })
   @Throttle({
     default: {
-      limit: 10,
+      limit: 15,
       ttl: 60000,
     },
   })
