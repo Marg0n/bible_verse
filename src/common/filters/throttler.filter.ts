@@ -26,13 +26,13 @@ export class ThrottlerFilter implements ExceptionFilter {
     //? Log the blocked attacks
     /**
      * example logs:
-     * WARN Rate limit exceeded
-     * IP: 103.xxx.xxx.xxx
+     * WARN [ThrottlerFilter]
+     * Rate limit exceeded || POST /auth/login || IP: 103.xxx.xxx.xxx
      * Route: POST /auth/login
      */
 
     this.logger.warn(
-      `Rate limit exceeded | ${request.method} ${request.url} | IP: ${request.ip}`,
+      `Rate limit exceeded || ${request.method} ${request.url} || IP: ${request.ip}`,
     );
 
     // Logger.warn(`Rate limit exceeded: ${request.ip}`, 'RateLimiter');
