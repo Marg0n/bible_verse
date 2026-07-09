@@ -32,7 +32,7 @@ export class ThrottlerFilter implements ExceptionFilter {
      */
 
     this.logger.warn(
-      `Rate limit exceeded || ${request.method} ${request.url} || IP: ${request.ip}`,
+      `Rate limit exceeded | ${request.method} ${request.url} | IP: ${request.ip}`,
     );
 
     // Logger.warn(`Rate limit exceeded: ${request.ip}`, 'RateLimiter');
