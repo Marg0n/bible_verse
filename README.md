@@ -104,6 +104,16 @@ $ mau deploy
 
 With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
+## Libraries highlights
+
+- Prisma
+- passport &  Passport-jwt
+- Swagger
+- Throttler
+- Bcrypt
+- Redis
+- Class-validator and transformer
+
 ## Roadmaps
 
 - [ ] Push notifications for daily reminders
