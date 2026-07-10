@@ -11,11 +11,21 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ThrottlerFilter } from './common/filters/throttler.filter';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  //? Global pipes
+  const port = process.env.PORT ?? 3000;
+
+  //* CORS
+  app.enableCors({
+    origin: process.env.ALLOWED_ORIGINS?.split(',') ?? '*',
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    credentials: true,
+  });
+
+  //* Global pipes
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, //? strips unknown fields
@@ -24,17 +34,17 @@ async function bootstrap() {
     }),
   );
 
-  //? Throttlers common filter Register globally
-  app.useGlobalFilters(new ThrottlerFilter());
-
-  //? This helps Express report the real client IP instead of the proxy's IP.
+  //* This helps Express report the real client IP instead of the proxy's IP.
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-  app.getHttpAdapter().getInstance().set('trust proxy', true);
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
-  //? Globally observes every request and gets logged
+  //* Globally observes every request and gets logged
   app.useGlobalInterceptors(new LoggingInterceptor());
 
-  //? Swagger config
+  //* Common filter Register globally
+  app.useGlobalFilters(new HttpExceptionFilter(), new ThrottlerFilter()); //? Http exceptions, Throttlers
+
+  //* Swagger config
   const config = new DocumentBuilder()
     .setTitle('Bible Verse API')
     .setDescription(
@@ -51,10 +61,16 @@ async function bootstrap() {
     )
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  if (process.env.NODE_ENV !== 'production') {
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+  }
 
-  SwaggerModule.setup('api', app, document);
+  await app.listen(port);
 
-  await app.listen(process.env.PORT ?? 3000);
+  console.log(`Application running on: ${await app.getUrl()} | ${port}`);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Failed to start application:', err);
+  process.exit(1);
+});
