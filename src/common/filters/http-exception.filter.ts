@@ -13,19 +13,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
+    const ctx = host.switchToHttp(); //? We're handling an HTTP request; not GraphQL, WebSockets, gRPC
 
-    const response = ctx.getResponse<Response>();
+    const response = ctx.getResponse<Response>(); //? instead of Nest doing it, manually sending e.g. response.status(400).json(...)
 
-    const request = ctx.getRequest<Request>();
+    const request = ctx.getRequest<Request>(); //? contains: method, url, headers, body, ip, params
 
     const status =
       exception instanceof HttpException
         ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+        : HttpStatus.INTERNAL_SERVER_ERROR; //? 500
 
     let message: unknown = 'Internal server error';
 
+    //? To safely extract whatever is inside
     if (exception instanceof HttpException) {
       const exceptionResponse = exception.getResponse();
 
@@ -40,6 +41,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       }
     }
 
+    //? Error logging
     this.logger.error(
       `${request.method} ${request.url} -> ${status}`,
       exception instanceof Error ? exception.stack : undefined,
