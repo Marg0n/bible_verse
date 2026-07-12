@@ -7,7 +7,7 @@
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ThrottlerFilter } from './common/filters/throttler.filter';
@@ -17,6 +17,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const port = process.env.PORT ?? 3000;
+  const logger = new Logger('Bootstrap');
 
   //* CORS
   app.enableCors({
@@ -68,7 +69,7 @@ async function bootstrap() {
 
   await app.listen(port);
 
-  console.log(`Application running on: ${await app.getUrl()} | ${port}`);
+  logger.log(`Application running on ${await app.getUrl()}`);
 }
 bootstrap().catch((err) => {
   console.error('Failed to start application:', err);

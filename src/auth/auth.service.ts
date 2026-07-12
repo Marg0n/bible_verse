@@ -3,14 +3,14 @@ import {
   BadRequestException,
   Injectable,
   Logger,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from './interfaces/auth.interface';
-import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -34,12 +34,12 @@ export class AuthService {
       });
 
       if (existingUser) {
-        // throw new BadRequestException('Email already exist');
-        this.logger.warn(`${mail} already exists!`);
-        return {
-          success: true,
-          message: 'Email already exists!',
-        };
+        throw new BadRequestException(`Email ${mail} already exists!`);
+        // this.logger.warn(`${mail} already exists!`);
+        // return {
+        //   success: true,
+        //   message: 'Email already exists!',
+        // };
       }
 
       //? Hashing
@@ -73,13 +73,13 @@ export class AuthService {
         description: 'User registered successfully',
         data: result,
       };
-    } catch (error) {
-      this.logger.error('Register error: ', error);
-
-      if (error instanceof BadRequestException) {
-        throw error;
+    } catch (error: any) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (error?.code === 'P2003') {
+        this.logger.error('Register error: ', error);
+        //? Foreign key failure / DB down
+        throw new ServiceUnavailableException('Database connection lost');
       }
-
       throw new BadRequestException('User Creation failed');
     }
   }
@@ -134,12 +134,12 @@ export class AuthService {
       });
 
       if (!user) {
-        // throw new BadRequestException('Invalid credentials');
-        this.logger.warn(`Invalid credentials for ${mail}`);
-        return {
-          success: true,
-          message: 'Invalid user or credentials',
-        };
+        throw new BadRequestException(`Invalid credentials for ${mail}`);
+        // this.logger.warn(`Invalid credentials for ${mail}`);
+        // return {
+        //   success: false,
+        //   message: 'Invalid user or credentials',
+        // };
       }
 
       //? Compare password
@@ -169,12 +169,14 @@ export class AuthService {
         description: 'User login successful',
         data: result,
       };
-    } catch (error) {
-      this.logger.error('Login error: ', error);
-
-      if (error instanceof BadRequestException) {
-        throw error;
+    } catch (error: any) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (error?.code === 'P2003') {
+        this.logger.error('Login error: ', error);
+        //? Foreign key failure / DB down
+        throw new ServiceUnavailableException('Database connection lost');
       }
+      // throw error;
 
       throw new BadRequestException('User Login failed');
     }
@@ -247,10 +249,14 @@ export class AuthService {
         success: true,
         message: 'Logged out successfully',
       };
-    } catch (error) {
-      this.logger.error('logout error:', error);
-
-      throw new BadRequestException('Internal error');
+    } catch (error: any) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (error?.code === 'P2003') {
+        this.logger.error('Logout error: ', error);
+        //? Foreign key failure / DB down
+        throw new ServiceUnavailableException('Database connection lost');
+      }
+      throw error;
     }
   }
 }
