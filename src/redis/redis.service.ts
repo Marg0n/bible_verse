@@ -23,9 +23,9 @@ export class RedisService implements OnModuleInit {
     );
 
     try {
-      this.logger.log(`Connecting to Redis at ${redisUrl}...`);
+      // this.logger.log(`Connecting to Redis at ${redisUrl}...`);
       await this.client.connect();
-      this.logger.log('Redis connected successfully!');
+      // this.logger.log('Redis connected successfully!');
     } catch (error) {
       this.logger.warn(
         'Redis Failed to connect to Redis during startup. App will continue without cache.',

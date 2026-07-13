@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   BadRequestException,
   Injectable,
@@ -32,8 +33,8 @@ export class FavoritesService {
         description: 'Added to Favorites',
         data: result,
       };
-    } catch (error) {
-      this.logger.error('add favorites: ', error);
+    } catch (error: any) {
+      // this.logger.error('add favorites: ', error);
       throw new BadRequestException('Verse already added to favorites');
     }
   }
@@ -58,8 +59,8 @@ export class FavoritesService {
         description: 'Favorites data successfully retrieved',
         data: result,
       };
-    } catch (error) {
-      this.logger.error('get fav: ', error);
+    } catch (error: any) {
+      // this.logger.error('get fav: ', error);
       throw new NotFoundException('Getting issues to get favorites');
     }
   }
@@ -81,8 +82,8 @@ export class FavoritesService {
         description: 'Favorites data successfully removed.',
         data: result,
       };
-    } catch (error) {
-      this.logger.error('remove fav: ', error);
+    } catch (error: any) {
+      // this.logger.error('remove fav: ', error);
       throw new NotFoundException('Favorite not found');
     }
   }
