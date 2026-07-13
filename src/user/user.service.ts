@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   BadRequestException,
   Injectable,
@@ -52,14 +53,14 @@ export class UserService {
       const cached = await redis.get(cacheKey);
 
       if (cached) {
-        this.logger.log(`USER CACHE HIT: ${cacheKey}`);
+        // this.logger.log(`USER CACHE HIT: ${cacheKey}`);
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return JSON.parse(cached);
       }
 
       //? test cache
-      this.logger.log(`USER CACHE MISS: ${cacheKey}`);
+      // this.logger.log(`USER CACHE MISS: ${cacheKey}`);
 
       //? Query Database Only on Cache Miss
       const result = await this.prisma.user.findUnique({
@@ -89,8 +90,8 @@ export class UserService {
       });
 
       return response;
-    } catch (error) {
-      this.logger.error('get user: ', error);
+    } catch (error: any) {
+      // this.logger.error('get user: ', error);
       throw new BadRequestException('Problem getting user');
     }
   }
@@ -115,8 +116,8 @@ export class UserService {
         description: 'Theme updated successfully.',
         data: result,
       };
-    } catch (error) {
-      this.logger.error('Theme: ', error);
+    } catch (error: any) {
+      // this.logger.error('Theme: ', error);
       throw new BadRequestException('Theme updating failed');
     }
   }
