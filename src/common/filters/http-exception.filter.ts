@@ -26,6 +26,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     let message: unknown = 'Internal server error';
 
+    //? Exclude Favicon from Logging
+    if (request.url === '/favicon.ico') {
+      return;
+    }
+
     //? To safely extract whatever is inside
     if (exception instanceof HttpException) {
       const exceptionResponse = exception.getResponse();
