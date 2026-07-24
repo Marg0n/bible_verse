@@ -107,13 +107,40 @@ With Mau, you can deploy your application in just a few clicks, allowing you to 
 ## Libraries highlights
 
 - Prisma
-- passport &  Passport-jwt
+- Passport &  Passport-jwt
 - Swagger
 - Throttler
 - Bcrypt
 - Redis
 - Class-validator and transformer
 - Zod
+
+### Clear usage view:
+
+<!-- 
+| Category | Feature | Status |
+| :--- | :--- | :---: |
+| **Infrastructure** | Docker | ✅ |
+| | PostgreSQL | ✅ |
+| | Redis | ✅ |
+| | Environment validation (Zod) | ✅ |
+| | Typed config started | ✅ |
+| **Security** | JWT Access Token | ✅ |
+| | Refresh Token Rotation | ✅ |
+| | Password hashing | ✅ |
+| | Global Validation | ✅ |
+| | Rate Limiting | ✅ |
+| | Custom 429 response | ✅ |
+| | Global Exception Filter | ✅ |
+| **Performance** | Redis caching | ✅ |
+| | Request logging | ✅ |
+| | Cache logging (HIT/MISS) | ✅ |    -->
+
+| Feature Category | Implemented Features |
+| :--- | :--- |
+| **Infrastructure** | ✅ Docker<br>✅ PostgreSQL<br>✅ Redis<br>✅ Environment validation (Zod)<br>✅ Typed config started |
+| **Security** | ✅ JWT Access Token<br>✅ Refresh Token Rotation<br>✅ Password hashing<br>✅ Global Validation<br>✅ Rate Limiting<br>✅ Custom 429 response<br>✅ Global Exception Filter |
+| **Performance** | ✅ Redis caching<br>✅ Request logging<br>✅ Cache logging (HIT/MISS) |   
 
 ## Roadmaps
 
