@@ -134,13 +134,14 @@ With Mau, you can deploy your application in just a few clicks, allowing you to 
 | | Global Exception Filter | ✅ |
 | **Performance** | Redis caching | ✅ |
 | | Request logging | ✅ |
+| | Health Check| ⬜ |
 | | Cache logging (HIT/MISS) | ✅ |    -->
 
 | Feature Category | Implemented Features |
 | :--- | :--- |
 | **Infrastructure** | ✅ Docker<br>✅ PostgreSQL<br>✅ Redis<br>✅ Environment validation (Zod)<br>✅ Typed config started |
-| **Security** | ✅ JWT Access Token<br>✅ Refresh Token Rotation<br>✅ Password hashing<br>✅ Global Validation<br>✅ Rate Limiting<br>✅ Custom 429 response<br>✅ Global Exception Filter |
-| **Performance** | ✅ Redis caching<br>✅ Request logging<br>✅ Cache logging (HIT/MISS) |   
+| **Security** | ✅ JWT Access Token<br>✅ Refresh Token Rotation<br>✅ Password hashing<br>✅ Global Validation<br>✅ Rate Limiting<br>✅ Custom 429 response<br>✅ Global Exception Filter<br>✅ Request Validation |
+| **Performance** | ✅ Redis caching<br>✅ Request logging<br>✅ Cache logging (HIT/MISS)<br>✅ Production Config<br>⬜ Health Check |   
 
 ## Roadmaps
 
