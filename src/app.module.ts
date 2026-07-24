@@ -18,12 +18,21 @@ import { UserModule } from './user/user.module';
 import { RedisModule } from './redis/redis.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import appConfig from './config/app.config';
+import databaseConfig from './config/database.config';
+import jwtConfig from './config/jwt.config';
+import redisConfig from './config/redis.config';
+import { validate } from './config/validation';
 
 @Module({
   imports: [
     //! Must be first!
     ConfigModule.forRoot({
       isGlobal: true,
+
+      validate,
+
+      load: [appConfig, databaseConfig, jwtConfig, redisConfig],
     }),
     ThrottlerModule.forRoot({
       throttlers: [
