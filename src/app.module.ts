@@ -23,6 +23,7 @@ import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
 import redisConfig from './config/redis.config';
 import { validate } from './config/validation';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { validate } from './config/validation';
     StreakModule,
     AuthModule,
     RedisModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
