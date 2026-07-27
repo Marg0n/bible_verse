@@ -139,9 +139,11 @@ With Mau, you can deploy your application in just a few clicks, allowing you to 
 
 | Feature Category | Implemented Features |
 | :--- | :--- |
-| **Infrastructure** | ✅ Docker<br>✅ PostgreSQL<br>✅ Redis<br>✅ Environment validation (Zod)<br>✅ Typed config<br>⬜ Health Check |
-| **Security** | ✅ JWT Access Token<br>✅ Refresh Token Rotation<br>✅ Password hashing<br>✅ Global Validation<br>✅ Rate Limiting<br>✅ Custom 429 response<br>✅ Global Exception Filter<br>✅ Request Validation |
-| **Performance** | ✅ Redis caching<br>✅ Request logging<br>✅ Cache logging (HIT/MISS) |   
+| **Infrastructure** | ✅ Docker<br>✅ PostgreSQL<br>✅ Redis<br>✅ Environment validation (Zod)<br>✅ Typed config<br>✅ Health endpoint |
+| **Security** | ✅ JWT Access Token<br>✅ Refresh Token Rotation<br>✅ Password hashing<br>✅ Global Validation<br>✅ Rate Limiting<br>✅ Custom 429 response<br>✅ Global Exception Filter<br>✅ Request Validation<br>✅ Guards |
+| **API** | ✅ Validation<br>✅ Swagger<br>✅ DTOs<br>✅ Exception Filter |   
+| **Performance** | ✅ Redis caching<br>✅ Request logging<br>✅ Cache logging (HIT/MISS)<br>✅ Rate limiting |   
+| **Production** | ✅ Health checks<br>✅ Environment validation<br> |   
 
 ## Roadmaps
 

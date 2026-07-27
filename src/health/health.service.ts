@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { ConfigService } from '@nestjs/config';
@@ -45,10 +45,13 @@ export class HealthService {
     const psqlStatus = psql ? 'up' : 'down';
     const redisStatus = redis ? 'up' : 'down';
 
-    const status = psqlStatus && redisStatus ? 'ok' : 'error';
+    const status = psql && redis ? 'ok' : 'error';
+    const statusCode =
+      psql && redis ? HttpStatus.OK : HttpStatus.SERVICE_UNAVAILABLE;
 
     return {
       status: status,
+      code: statusCode,
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       environment: this.configService.getOrThrow<string>('NODE_ENV'),
