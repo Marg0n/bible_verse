@@ -231,9 +231,14 @@ export class AuthService {
     }
   }
 
-  //TODO: reset password, email sender or nodemailer, OTP / verify OTP
-  //* Reset password
-  async refreshPassword(email: string) {}
+  //TODO: Forgot password
+  //* Forgot password
+  async forgotPassword(email: string) {}
+
+  //TODO: Verify OTP
+  //TODO: Reset password
+  //TODO: Email Verification
+  //TODO: Resend OTP
 
   //* Logout
   async logout(userId: string) {
