@@ -12,5 +12,10 @@ declare namespace NodeJS {
     POSTGRES_USER: string;
     POSTGRES_PASSWORD: number;
     POSTGRES_DB: string;
+    MAIL_HOST: string;
+    MAIL_PORT: number;
+    MAIL_USER: string;
+    MAIL_PASSWORD: string;
+    MAIL_FROM: string;
   }
 }
