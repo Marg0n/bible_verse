@@ -25,6 +25,7 @@ import redisConfig from './config/redis.config';
 import { validate } from './config/validation';
 import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
+import mailConfig from './config/mail.config';
 
 @Module({
   imports: [
@@ -34,7 +35,7 @@ import { MailModule } from './mail/mail.module';
 
       validate,
 
-      load: [appConfig, databaseConfig, jwtConfig, redisConfig],
+      load: [appConfig, databaseConfig, jwtConfig, redisConfig, mailConfig],
     }),
     ThrottlerModule.forRoot({
       throttlers: [
