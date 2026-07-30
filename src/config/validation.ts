@@ -22,6 +22,16 @@ const envSchema = z.object({
   REDIS_URL: z.url().default('redis://localhost:6379'),
 
   ALLOWED_ORIGINS: z.string(),
+
+  MAIL_HOST: z.string().min(1),
+
+  MAIL_PORT: z.coerce.number(), //? coerce.number() turns string to number like '3000' to 3000
+
+  MAIL_USER: z.email(),
+
+  MAIL_PASSWORD: z.string().min(1),
+
+  MAIL_FROM: z.string().min(1),
 });
 
 export function validate(config: Record<string, unknown>) {

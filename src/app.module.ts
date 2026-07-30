@@ -24,6 +24,7 @@ import jwtConfig from './config/jwt.config';
 import redisConfig from './config/redis.config';
 import { validate } from './config/validation';
 import { HealthModule } from './health/health.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { HealthModule } from './health/health.module';
     AuthModule,
     RedisModule,
     HealthModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [
