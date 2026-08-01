@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { MailOptions } from 'nodemailer/lib/json-transport';
+import { MailOptions } from './interfaces/mail-options.interface';
 
 @Injectable()
 export class MailService implements OnModuleInit {
@@ -37,11 +37,21 @@ export class MailService implements OnModuleInit {
         'SMTP connection failed',
         error instanceof Error ? error.stack : undefined,
       );
+
+      throw error;
     }
   }
 
+  //* Sending email
   async sendMail(options: MailOptions) {
-    //
+    const from = this.configService.getOrThrow<string>('mail.from');
+
+    await this.transporter.sendMail({
+      from,
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+    });
   }
   //TODO: As the project grows, if email functionality expands (welcome emails, newsletters, verification, notifications).
 }
