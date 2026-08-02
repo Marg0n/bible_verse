@@ -244,8 +244,17 @@ export class AuthService {
     const redis = this.redisService.getClient();
 
     await redis.set(`otp:${email}`, otp, {
-      EX: 600,
+      EX: 600, //? 600 seconds = 10 mins
     });
+  }
+
+  //* Verify OTP helper
+  private async verifyStoredOtp(email: string, otp: string): Promise<boolean> {
+    const redis = this.redisService.getClient();
+
+    const storedOtp = await redis.get(`otp:${email}`);
+
+    return storedOtp === otp;
   }
 
   //TODO: Forgot password
