@@ -11,6 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from './interfaces/auth.interface';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
+    private readonly redisService: RedisService,
   ) {}
 
   //* Nestjs logger
@@ -235,6 +237,15 @@ export class AuthService {
   private generateOtp(): string {
     //? Always generate 6 digit number as 100000 + 0.54321 * 900000 = 588889
     return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  //* Redis storage for OTP
+  private async storeOtp(email: string, otp: string) {
+    const redis = this.redisService.getClient();
+
+    await redis.set(`otp:${email}`, otp, {
+      EX: 600,
+    });
   }
 
   //TODO: Forgot password
