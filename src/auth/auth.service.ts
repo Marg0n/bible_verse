@@ -231,6 +231,12 @@ export class AuthService {
     }
   }
 
+  //* Generate OTP
+  private generateOtp(): string {
+    //? Always generate 6 digit number as 100000 + 0.54321 * 900000 = 588889
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
   //TODO: Forgot password
   //* Forgot password
   async forgotPassword(email: string) {}
