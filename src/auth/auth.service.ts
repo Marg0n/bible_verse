@@ -12,6 +12,8 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from './interfaces/auth.interface';
 import { RedisService } from '../redis/redis.service';
+import { MailService } from '../mail/mail.service';
+import { success } from 'zod';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +22,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
     private readonly redisService: RedisService,
+    private readonly mailService: MailService,
   ) {}
 
   //* Nestjs logger
@@ -61,7 +64,7 @@ export class AuthService {
       //? Update refresh token to db
       await this.updateRefreshToken(user.id, tokens.refreshToken);
 
-      //? Removing password from respnse
+      //? Removing password from response
       const { password: _, ...safeUser } = user;
 
       const result = {
@@ -259,7 +262,29 @@ export class AuthService {
 
   //TODO: Forgot password
   //* Forgot password
-  async forgotPassword(email: string) {}
+  async forgotPassword(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found!');
+    }
+
+    //? Generate OTP
+    const otp = this.generateOtp();
+
+    //? Store OTP
+    await this.storeOtp(email, otp);
+
+    //? Send OTP via mail
+    await this.mailService.sendOtpEmail(email, otp);
+
+    return {
+      success: true,
+      message: 'OTP sent successfully',
+    };
+  }
 
   //TODO: Verify OTP
   //TODO: Reset password
