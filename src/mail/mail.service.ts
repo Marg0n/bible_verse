@@ -53,5 +53,25 @@ export class MailService implements OnModuleInit {
       html: options.html,
     });
   }
+
+  //* Send OTP
+  // Add this method inside your MailService class
+  async sendOtpEmail(email: string, otp: string) {
+    await this.sendMail({
+      to: email,
+      subject: 'Password Reset OTP',
+      html: `
+      <div style="font-family: Arial, sans-serif;">
+        <h2>Password Reset Request</h2>
+        <p>Your One-Time Password (OTP) is:</p>
+        <h1 style="color: #2563eb; letter-spacing: 5px;">${otp}</h1>
+        <p>This code is valid for 10 minutes.</p>
+        <p>If you did not request this, please ignore this email.</p>
+      </div>
+    `,
+    });
+
+    this.logger.log(`OTP email sent to ${email}`);
+  }
   //TODO: As the project grows, if email functionality expands (welcome emails, newsletters, verification, notifications).
 }

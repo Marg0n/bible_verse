@@ -11,6 +11,9 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from './interfaces/auth.interface';
+import { RedisService } from '../redis/redis.service';
+import { MailService } from '../mail/mail.service';
+import { success } from 'zod';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +21,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
+    private readonly redisService: RedisService,
+    private readonly mailService: MailService,
   ) {}
 
   //* Nestjs logger
@@ -59,7 +64,7 @@ export class AuthService {
       //? Update refresh token to db
       await this.updateRefreshToken(user.id, tokens.refreshToken);
 
-      //? Removing password from respnse
+      //? Removing password from response
       const { password: _, ...safeUser } = user;
 
       const result = {
@@ -231,9 +236,55 @@ export class AuthService {
     }
   }
 
+  //* Generate OTP
+  private generateOtp(): string {
+    //? Always generate 6 digit number as 100000 + 0.54321 * 900000 = 588889
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  //* Redis storage for OTP
+  private async storeOtp(email: string, otp: string) {
+    const redis = this.redisService.getClient();
+
+    await redis.set(`otp:${email}`, otp, {
+      EX: 600, //? 600 seconds = 10 mins
+    });
+  }
+
+  //* Verify OTP helper
+  private async verifyStoredOtp(email: string, otp: string): Promise<boolean> {
+    const redis = this.redisService.getClient();
+
+    const storedOtp = await redis.get(`otp:${email}`);
+
+    return storedOtp === otp;
+  }
+
   //TODO: Forgot password
   //* Forgot password
-  async forgotPassword(email: string) {}
+  async forgotPassword(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found!');
+    }
+
+    //? Generate OTP
+    const otp = this.generateOtp();
+
+    //? Store OTP
+    await this.storeOtp(email, otp);
+
+    //? Send OTP via mail
+    await this.mailService.sendOtpEmail(email, otp);
+
+    return {
+      success: true,
+      message: 'OTP sent successfully',
+    };
+  }
 
   //TODO: Verify OTP
   //TODO: Reset password
