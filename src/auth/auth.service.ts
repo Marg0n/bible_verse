@@ -260,7 +260,6 @@ export class AuthService {
     return storedOtp === otp;
   }
 
-  //TODO: Forgot password
   //* Forgot password
   async forgotPassword(email: string) {
     const user = await this.prisma.user.findUnique({
@@ -286,7 +285,20 @@ export class AuthService {
     };
   }
 
-  //TODO: Verify OTP
+  //* Verify OTP
+  async verifyOtp(email: string, otp: string) {
+    const isValid = await this.verifyStoredOtp(email, otp);
+
+    if (!isValid) {
+      throw new BadRequestException('Invalid OTP');
+    }
+
+    return {
+      success: true,
+      message: 'OTP verified',
+    };
+  }
+
   //TODO: Reset password
   //TODO: Email Verification
   //TODO: Resend OTP
