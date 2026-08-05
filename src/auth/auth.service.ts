@@ -290,7 +290,7 @@ export class AuthService {
     const isValid = await this.verifyStoredOtp(email, otp);
 
     if (!isValid) {
-      throw new BadRequestException('Invalid OTP');
+      throw new BadRequestException('Invalid or expired OTP');
     }
 
     return {
@@ -301,7 +301,8 @@ export class AuthService {
 
   //* Reset password
   async resetPassword(email: string, otp: string, newPassword: string) {
-    const valid = await this.verifyOtp(email, otp);
+    //? Awaiting for the OTP verification
+    await this.verifyOtp(email, otp);
 
     //? Hash password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
