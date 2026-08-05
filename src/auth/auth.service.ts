@@ -260,7 +260,6 @@ export class AuthService {
     return storedOtp === otp;
   }
 
-  //TODO: Forgot password
   //* Forgot password
   async forgotPassword(email: string) {
     const user = await this.prisma.user.findUnique({
@@ -286,8 +285,45 @@ export class AuthService {
     };
   }
 
-  //TODO: Verify OTP
-  //TODO: Reset password
+  //* Verify OTP
+  async verifyOtp(email: string, otp: string) {
+    const isValid = await this.verifyStoredOtp(email, otp);
+
+    if (!isValid) {
+      throw new BadRequestException('Invalid or expired OTP');
+    }
+
+    return {
+      success: true,
+      message: 'OTP verified',
+    };
+  }
+
+  //* Reset password
+  async resetPassword(email: string, otp: string, newPassword: string) {
+    //? Awaiting for the OTP verification
+    await this.verifyOtp(email, otp);
+
+    //? Hash password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    //? DB update
+    await this.prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword },
+    });
+
+    //? Redis clear
+    const redis = this.redisService.getClient();
+
+    await redis.del(`otp:${email}`);
+
+    return {
+      success: true,
+      message: 'Password reset successful',
+    };
+  }
+
   //TODO: Email Verification
   //TODO: Resend OTP
 
