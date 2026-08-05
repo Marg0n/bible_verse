@@ -299,7 +299,30 @@ export class AuthService {
     };
   }
 
-  //TODO: Reset password
+  //* Reset password
+  async resetPassword(email: string, otp: string, newPassword: string) {
+    const valid = await this.verifyOtp(email, otp);
+
+    //? Hash password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    //? DB update
+    await this.prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword },
+    });
+
+    //? Redis clear
+    const redis = this.redisService.getClient();
+
+    await redis.del(`otp:${email}`);
+
+    return {
+      success: true,
+      message: 'Password reset successful',
+    };
+  }
+
   //TODO: Email Verification
   //TODO: Resend OTP
 
