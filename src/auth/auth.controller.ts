@@ -26,6 +26,9 @@ import { AuthResponseDto } from './dto/swaggerAuthResponse.dto';
 import type { AuthUser } from './interfaces/auth-user.interface';
 import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @ApiTags('Authentication')
 @ApiBearerAuth('JWT-auth')
@@ -106,6 +109,50 @@ export class AuthController {
   @Post('refresh')
   refreshToken(@Body() dto: RefreshTokenDto) {
     return this.authService.refreshToken(dto.refreshToken);
+  }
+
+  //* Forgot password
+  @ApiOperation({
+    summary: 'Request password reset OTP',
+  })
+  @ApiBody({
+    type: ForgotPasswordDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'OTP sent successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'User not found',
+  })
+  @Throttle({
+    default: {
+      limit: 3,
+      ttl: 60000,
+    },
+  })
+  @Post('forgot-password')
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto.email);
+  }
+
+  //* Verify OTP endpoint
+  @ApiOperation({
+    description: 'Verify password reset OTP',
+  })
+  @ApiBody({
+    type: VerifyOtpDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'OTP verified successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid or expired OTP',
+  })
+  @Post('verify-otp')
+  verifyOtp(@Body() dto: VerifyOtpDto) {
+    return this.authService.verifyOtp(dto.email, dto.otp);
   }
 
   //* Logout
