@@ -136,6 +136,25 @@ export class AuthController {
     return this.authService.forgotPassword(dto.email);
   }
 
+  //* Verify OTP endpoint
+  @ApiOperation({
+    description: 'Verify password reset OTP',
+  })
+  @ApiBody({
+    type: VerifyOtpDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'OTP verified successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid or expired OTP',
+  })
+  @Post('verify-otp')
+  verifyOtp(@Body() dto: VerifyOtpDto) {
+    return this.authService.verifyOtp(dto.email, dto.otp);
+  }
+
   //* Logout
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
