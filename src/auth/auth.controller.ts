@@ -26,8 +26,8 @@ import { AuthResponseDto } from './dto/swaggerAuthResponse.dto';
 import type { AuthUser } from './interfaces/auth-user.interface';
 import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { ForgotPasswordDto, ForgotPasswordResponseDto } from './dto/forgot-password.dto';
+import { VerifyOtpDto, VerifyOtpResponseDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @ApiTags('Authentication')
@@ -121,6 +121,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'OTP sent successfully',
+    type: ForgotPasswordResponseDto,
   })
   @ApiBadRequestResponse({
     description: 'User not found',
@@ -146,6 +147,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'OTP verified successfully',
+    type: VerifyOtpResponseDto,
   })
   @ApiBadRequestResponse({
     description: 'Invalid or expired OTP',

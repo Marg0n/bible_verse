@@ -9,3 +9,12 @@ export class ForgotPasswordDto {
   @IsEmail()
   email!: string;
 }
+
+//* Api success response
+export class ForgotPasswordResponseDto {
+  @ApiProperty({ example: true })
+  success!: boolean;
+
+  @ApiProperty({ example: 'OTP sent successfully' })
+  message!: string;
+}

@@ -24,3 +24,12 @@ export class VerifyOtpDto {
   @Matches(/^[0-9]+$/, { message: 'OTP must contain only digits' }) //? Optional: Enforce numeric characters only
   otp!: string;
 }
+
+//* Api success response
+export class VerifyOtpResponseDto {
+  @ApiProperty({ example: true })
+  success!: boolean;
+
+  @ApiProperty({ example: 'OTP verified' })
+  message!: string;
+}
