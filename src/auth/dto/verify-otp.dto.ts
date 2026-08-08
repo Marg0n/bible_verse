@@ -1,9 +1,24 @@
-import { IsEmail, IsString, Length, Matches } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Length,
+  Matches,
+} from 'class-validator';
 
 export class VerifyOtpDto {
+  @ApiProperty({
+    example: 'john@email.com',
+  })
+  @IsNotEmpty()
   @IsEmail()
   email!: string;
 
+  @ApiProperty({
+    example: '121314',
+  })
+  @IsNotEmpty()
   @IsString()
   @Length(6, 6)
   @Matches(/^[0-9]+$/, { message: 'OTP must contain only digits' }) //? Optional: Enforce numeric characters only
