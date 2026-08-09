@@ -1,4 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiProperty,
+  ApiPropertyOptional,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
 //* Incoming Query DTO for Swagger
@@ -6,17 +11,23 @@ export class LanguageDto {
   @ApiPropertyOptional({
     description:
       'Filter language of the returned verse. If left empty, both languages will be returned.',
-    enum: ['en', 'bn'],
+    enum: ['en', 'bn', 'both'],
     example: 'en',
   })
   @IsOptional()
   @IsString()
-  @IsIn(['en', 'bn'])
-  lang?: 'en' | 'bn';
+  @IsIn(['en', 'bn', 'both'])
+  lang?: 'en' | 'bn' | 'both';
 }
 
 //* The structural data shape when lang is passed ('en' or 'bn')
-class LocalizedVerseDto {
+export class LocalizedVerseDto {
+  @ApiPropertyOptional({
+    example: '2026-06-04',
+    description: 'Only present on daily verse endpoint requests',
+  })
+  date?: string;
+
   @ApiProperty({ example: 1, description: 'The chapter number' })
   chapter!: number;
 
@@ -34,16 +45,13 @@ class LocalizedVerseDto {
     description: 'The verse content text',
   })
   text!: string;
-
-  @ApiPropertyOptional({
-    example: '2026-06-04',
-    description: 'Only present on daily verse endpoint requests',
-  })
-  date?: string;
 }
 
 //* The structural data shape when NO lang is passed (default fallback containing both)
-class DualLanguageVerseDto {
+export class DualLanguageVerseDto {
+  @ApiPropertyOptional({ example: '2026-06-04' })
+  date?: string;
+
   @ApiProperty({ example: 1 })
   chapter!: number;
 
@@ -63,21 +71,26 @@ class DualLanguageVerseDto {
     example: 'In the beginning God created the heaven and the earth.',
   })
   text_en!: string;
-
-  @ApiPropertyOptional({ example: '2026-06-04' })
-  date?: string;
 }
 
 //* Combined Wrapper Response using Swagger's 'oneOf' schema mapping matrix
+@ApiExtraModels(LocalizedVerseDto, DualLanguageVerseDto)
 export class BibleVerseResponseDto {
   @ApiProperty({ example: true })
   success!: boolean;
 
   @ApiProperty({
     oneOf: [
-      { $ref: '#/components/schemas/LocalizedVerseDto' },
-      { $ref: '#/components/schemas/DualLanguageVerseDto' },
+      { $ref: getSchemaPath(LocalizedVerseDto) },
+      { $ref: getSchemaPath(DualLanguageVerseDto) },
     ],
+    //? Optional: Provide a default example for the UI, but 'oneOf' handles the schema logic and shows the 1st one of array by default
+    // example: {
+    //   chapter: 1,
+    //   verse: 1,
+    //   book: 'Genesis',
+    //   text: 'In the beginning...',
+    // },
     description:
       'Returns a localized model if lang param is passed, otherwise a dual-language object structural layout.',
   })
