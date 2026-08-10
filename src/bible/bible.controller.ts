@@ -1,15 +1,23 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { BibleService } from './bible.service';
-import { BibleVerseResponseDto, LanguageDto } from './dto/languageDto.dto';
+import {
+  BibleVerseResponseDto,
+  DualLanguageVerseDto,
+  LanguageDto,
+  LocalizedVerseDto,
+} from './dto/languageDto.dto';
 import {
   ApiBadRequestResponse,
+  ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
 @SkipThrottle()
 @Controller('bible')
+@ApiExtraModels(LocalizedVerseDto, DualLanguageVerseDto)
 export class BibleController {
   constructor(private readonly bibleService: BibleService) {}
 
@@ -20,7 +28,23 @@ export class BibleController {
   })
   @ApiOkResponse({
     description: 'Daily verse data fetched successfully.',
-    type: BibleVerseResponseDto,
+    type: BibleVerseResponseDto, //? This handles the wrapper (success, data)
+    schema: {
+      // ? Explicitly override the 'data' property schema to show the union
+      allOf: [
+        { $ref: getSchemaPath(BibleVerseResponseDto) },
+        {
+          properties: {
+            data: {
+              oneOf: [
+                { $ref: getSchemaPath(LocalizedVerseDto) },
+                { $ref: getSchemaPath(DualLanguageVerseDto) },
+              ],
+            },
+          },
+        },
+      ],
+    },
   })
   @ApiBadRequestResponse({ description: 'Invalid query parameters passed.' })
   @Get()
@@ -36,6 +60,22 @@ export class BibleController {
   @ApiOkResponse({
     description: 'Random verse fetched successfully.',
     type: BibleVerseResponseDto,
+    schema: {
+      //? Explicitly override the 'data' property schema to show the union
+      allOf: [
+        { $ref: getSchemaPath(BibleVerseResponseDto) },
+        {
+          properties: {
+            data: {
+              oneOf: [
+                { $ref: getSchemaPath(LocalizedVerseDto) },
+                { $ref: getSchemaPath(DualLanguageVerseDto) },
+              ],
+            },
+          },
+        },
+      ],
+    },
   })
   @ApiBadRequestResponse({ description: 'Invalid query parameters passed.' })
   @Get('random')
