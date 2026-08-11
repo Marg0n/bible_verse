@@ -26,9 +26,15 @@ import { AuthResponseDto } from './dto/swaggerAuthResponse.dto';
 import type { AuthUser } from './interfaces/auth-user.interface';
 import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
-import { ForgotPasswordDto, ForgotPasswordResponseDto } from './dto/forgot-password.dto';
+import {
+  ForgotPasswordDto,
+  ForgotPasswordResponseDto,
+} from './dto/forgot-password.dto';
 import { VerifyOtpDto, VerifyOtpResponseDto } from './dto/verify-otp.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import {
+  ResetPasswordDto,
+  ResetPasswordResponseDto,
+} from './dto/reset-password.dto';
 
 @ApiTags('Authentication')
 @ApiBearerAuth('JWT-auth')
@@ -155,6 +161,26 @@ export class AuthController {
   @Post('verify-otp')
   verifyOtp(@Body() dto: VerifyOtpDto) {
     return this.authService.verifyOtp(dto.email, dto.otp);
+  }
+
+  //* Reset password
+  @ApiOperation({
+    summary: 'Reset password using OTP',
+  })
+  @ApiBody({
+    type: ResetPasswordDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Password reset successful',
+    type: ResetPasswordResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid or expired OTP',
+  })
+  @Post('reset-password')
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto.email, dto.otp, dto.newPassword);
   }
 
   //* Logout
