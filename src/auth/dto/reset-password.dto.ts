@@ -33,3 +33,12 @@ export class ResetPasswordDto {
   @MinLength(8)
   newPassword!: string;
 }
+
+//* Api success response
+export class ResetPasswordResponseDto {
+  @ApiProperty({ example: true })
+  success!: boolean;
+
+  @ApiProperty({ example: 'Password reset successful' })
+  message!: string;
+}

@@ -15,6 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
+//* GeDaily verse
 @SkipThrottle()
 @Controller('bible')
 @ApiExtraModels(LocalizedVerseDto, DualLanguageVerseDto)
@@ -52,6 +53,7 @@ export class BibleController {
     return this.bibleService.getDailyVerse(query.lang);
   }
 
+  //* Get Random verse
   @ApiOperation({
     summary: 'Get a completely random bible verse record',
     description:
