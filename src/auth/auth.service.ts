@@ -29,7 +29,7 @@ export class AuthService {
 
   //* Redis constants
   private readonly OTP_MAX_ATTEMPTS = 3;
-  private readonly OTP_TTL_SECONDS = 600;
+  private readonly OTP_TTL_SECONDS = 300;
 
   //* Create user by registration
   async register(email: string, password: string) {
@@ -250,7 +250,7 @@ export class AuthService {
     const redis = this.redisService.getClient();
 
     await redis.set(`otp:${email}`, otp, {
-      EX: this.OTP_TTL_SECONDS, //? 600 seconds = 10 mins
+      EX: this.OTP_TTL_SECONDS, //? e.g. 600 seconds = 10 mins
     });
 
     //? Reset attempt counter whenever a new OTP is generated
@@ -268,6 +268,13 @@ export class AuthService {
     }
 
     return attempts;
+  }
+
+  //* Helper to clear redis attempts
+  private async clearOtpAttempts(email: string) {
+    const redis = this.redisService.getClient();
+
+    await redis.del(`otp-attempts:${email}`);
   }
 
   //* Verify OTP helper
