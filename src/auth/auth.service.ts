@@ -13,7 +13,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from './interfaces/auth.interface';
 import { RedisService } from '../redis/redis.service';
 import { MailService } from '../mail/mail.service';
-import { success } from 'zod';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +26,10 @@ export class AuthService {
 
   //* Nestjs logger
   private readonly logger = new Logger(AuthService.name);
+
+  //* Redis constants
+  private readonly OTP_MAX_ATTEMPTS = 3;
+  private readonly OTP_TTL_SECONDS = 300;
 
   //* Create user by registration
   async register(email: string, password: string) {
@@ -247,8 +250,31 @@ export class AuthService {
     const redis = this.redisService.getClient();
 
     await redis.set(`otp:${email}`, otp, {
-      EX: 600, //? 600 seconds = 10 mins
+      EX: this.OTP_TTL_SECONDS, //? e.g. 600 seconds = 10 mins
     });
+
+    //? Reset attempt counter whenever a new OTP is generated
+    await redis.del(`otp-attempts:${email}`);
+  }
+
+  //* Redis increment attempts
+  private async incrementOtpAttempts(email: string): Promise<number> {
+    const redis = this.redisService.getClient();
+
+    const attempts = await redis.incr(`otp-attempts:${email}`);
+
+    if (attempts === 1) {
+      await redis.expire(`otp-attempts:${email}`, this.OTP_TTL_SECONDS);
+    }
+
+    return attempts;
+  }
+
+  //* Helper to clear redis attempts
+  private async clearOtpAttempts(email: string) {
+    const redis = this.redisService.getClient();
+
+    await redis.del(`otp-attempts:${email}`);
   }
 
   //* Verify OTP helper
