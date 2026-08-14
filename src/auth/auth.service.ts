@@ -13,6 +13,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from './interfaces/auth.interface';
 import { RedisService } from '../redis/redis.service';
 import { MailService } from '../mail/mail.service';
+import { TooManyRequestsException } from './utils/exceptions.util';
 
 @Injectable()
 export class AuthService {
@@ -313,11 +314,32 @@ export class AuthService {
 
   //* Verify OTP
   async verifyOtp(email: string, otp: string) {
+    //? Attempts check
+    const redis = this.redisService.getClient();
+
+    const attempts = Number((await redis.get(`otp-attempts:${email}`)) ?? 0);
+
+    if (attempts >= this.OTP_MAX_ATTEMPTS) {
+      throw new TooManyRequestsException(
+        'Too many OTP attempts. Please request a new OTP.',
+      );
+    }
+
+    //? OTP stored verification
     const isValid = await this.verifyStoredOtp(email, otp);
 
     if (!isValid) {
-      throw new BadRequestException('Invalid or expired OTP');
+      const currentAttempts = await this.incrementOtpAttempts(email);
+
+      const remainingAttempts = this.OTP_MAX_ATTEMPTS - currentAttempts;
+
+      throw new BadRequestException({
+        message: 'Invalid or expired OTP',
+        remainingAttempts: Math.max(remainingAttempts, 0),
+      });
     }
+
+    await this.clearOtpAttempts(email);
 
     return {
       success: true,
