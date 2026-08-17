@@ -32,6 +32,8 @@ export class AuthService {
   //* Redis constants
   private readonly OTP_MAX_ATTEMPTS = 3;
   private readonly OTP_TTL_SECONDS = 300;
+  private readonly OTP_EXPIRY_SECONDS = 600;
+  private readonly OTP_RESEND_COOLDOWN = 60;
 
   //* Create user by registration
   async register(email: string, password: string) {
@@ -286,6 +288,24 @@ export class AuthService {
     const storedOtp = await redis.get(`otp:${email}`);
 
     return storedOtp === otp;
+  }
+
+  //* Cooldown helper
+  private async checkOtpResendCooldown(email: string): Promise<number> {
+    const redis = this.redisService.getClient();
+
+    //? Create a key
+    const key = `otp-cooldown:${email}`;
+
+    //? Exits key check
+    const exist = await redis.exists(key);
+
+    if (exist) {
+      const ttl = await redis.ttl(key); //? ttl = Time To Live
+      return ttl;
+    }
+
+    return 0;
   }
 
   //* Forgot password
