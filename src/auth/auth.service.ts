@@ -32,7 +32,7 @@ export class AuthService {
   //* Redis constants
   private readonly OTP_MAX_ATTEMPTS = 3;
   private readonly OTP_TTL_SECONDS = 300;
-  private readonly OTP_EXPIRY_SECONDS = 600;
+  private readonly OTP_EXPIRY_SECONDS = 300;
   private readonly OTP_RESEND_COOLDOWN = 60;
 
   //* Create user by registration
@@ -306,6 +306,15 @@ export class AuthService {
     }
 
     return 0;
+  }
+
+  //* Set the cooldown
+  private async setOtpResendCooldown(email: string) {
+    const redis = this.redisService.getClient();
+
+    await redis.set(`otp-cooldown:${email}`, '1', {
+      EX: this.OTP_RESEND_COOLDOWN, //? Redis key automatically disappears after 60 seconds. No Cleanup job required.
+    });
   }
 
   //* Forgot password
