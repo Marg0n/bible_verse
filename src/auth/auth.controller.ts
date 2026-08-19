@@ -135,7 +135,7 @@ export class AuthController {
   @Throttle({
     default: {
       limit: 3,
-      ttl: 60000,
+      ttl: 30000,
     },
   })
   @Post('forgot-password')
