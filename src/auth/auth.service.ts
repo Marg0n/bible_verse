@@ -32,7 +32,6 @@ export class AuthService {
   //* Redis constants
   private readonly OTP_MAX_ATTEMPTS = 3;
   private readonly OTP_TTL_SECONDS = 300;
-  private readonly OTP_EXPIRY_SECONDS = 600;
   private readonly OTP_RESEND_COOLDOWN = 60;
 
   //* Create user by registration
@@ -308,28 +307,56 @@ export class AuthService {
     return 0;
   }
 
+  //* Set the cooldown
+  private async setOtpResendCooldown(email: string) {
+    const redis = this.redisService.getClient();
+
+    await redis.set(`otp-cooldown:${email}`, '1', {
+      EX: this.OTP_RESEND_COOLDOWN, //? Redis key automatically disappears after 60 seconds. No Cleanup job required.
+    });
+  }
+
   //* Forgot password
   async forgotPassword(email: string) {
+    const normalizedEmail = email.toLowerCase();
+
+    //? Check OTP resend cooldown status
+    const cooldown = await this.checkOtpResendCooldown(normalizedEmail);
+
+    if (cooldown > 0) {
+      throw new TooManyRequestsException(
+        `Please wait ${cooldown} seconds before requesting another OTP.`,
+      );
+    }
+
     const user = await this.prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     });
 
     if (!user) {
-      throw new BadRequestException('User not found!');
+      // throw new BadRequestException('User not found!');
+      //? Avoiding user or account enumeration.
+      return {
+        success: true,
+        message: 'If an account exists for this email, an OTP has been sent.',
+      };
     }
 
     //? Generate OTP
     const otp = generateOtp();
 
     //? Store OTP
-    await this.storeOtp(email, otp);
+    await this.storeOtp(normalizedEmail, otp);
 
     //? Send OTP via mail
-    await this.mailService.sendOtpEmail(email, otp);
+    await this.mailService.sendOtpEmail(normalizedEmail, otp);
+
+    //? Set OTP cooldown
+    await this.setOtpResendCooldown(normalizedEmail); //! the cooldown should only be set after the email has successfully been sent.
 
     return {
       success: true,
-      message: 'OTP sent successfully',
+      message: 'If an account exists for this email, an OTP has been sent.',
     };
   }
 
