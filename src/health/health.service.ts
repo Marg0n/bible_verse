@@ -52,6 +52,7 @@ export class HealthService {
     return {
       status: status,
       code: statusCode,
+      instance: this.configService.getOrThrow<string>('INSTANCE_NAME'),
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       environment: this.configService.getOrThrow<string>('NODE_ENV'),
