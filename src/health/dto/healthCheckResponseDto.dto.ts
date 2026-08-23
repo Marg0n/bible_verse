@@ -21,6 +21,12 @@ export class HealthCheckResponseDto {
   code!: number;
 
   @ApiProperty({
+    example: 'nest-3',
+    description: 'Shows the instance it running into',
+  })
+  instance!: string;
+
+  @ApiProperty({
     example: '2026-07-26T12:28:27.739Z',
     description: 'ISO 8601 timestamp of the check',
     format: 'date-time',
