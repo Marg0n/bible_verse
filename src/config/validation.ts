@@ -9,11 +9,11 @@ const envSchema = z.object({
 
   DATABASE_URL: z.string().min(1),
 
-  POSTGRES_USER: z.string(),
+  // POSTGRES_USER: z.string(),
 
-  POSTGRES_PASSWORD: z.string(),
+  // POSTGRES_PASSWORD: z.string(),
 
-  POSTGRES_DB: z.string(),
+  // POSTGRES_DB: z.string(),
 
   JWT_SECRET: z.string().min(32),
 
