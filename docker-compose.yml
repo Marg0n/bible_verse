@@ -5,7 +5,7 @@ services:
     container_name: bible-postgres
 
     environment:
-      # These variables are loaded from your .env file
+      # These variables are loaded from .env file
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -15,6 +15,14 @@ services:
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
     restart: unless-stopped
 
@@ -28,6 +36,13 @@ services:
 
     volumes:
       - redis_data:/data
+
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
     restart: unless-stopped
 
@@ -62,11 +77,13 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_FROM: ${MAIL_FROM}
 
-      INSTANCE_NAME: nest-1
+      INSTANCE_NAME: ${INSTANCE_NAME}
 
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
     restart: unless-stopped
 
