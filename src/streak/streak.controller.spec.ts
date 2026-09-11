@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StreakController } from './streak.controller';
+import { StreakService } from './streak.service';
 
 describe('StreakController', () => {
   let controller: StreakController;
