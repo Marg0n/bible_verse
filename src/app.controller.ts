@@ -31,22 +31,22 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @ApiOperation({
-    summary: 'Test Redis connection readiness status',
-    description:
-      'Writes a test key-value pair to Redis database instance and reads it back instantly.',
-  })
-  @ApiOkResponse({
-    description: 'Redis is working cleanly.',
-    type: String,
-    example: 'world',
-  })
-  @Get('redis-test')
-  async testRedis() {
-    const redis = this.redisService.getClient();
+  // @ApiOperation({
+  //   summary: 'Test Redis connection readiness status',
+  //   description:
+  //     'Writes a test key-value pair to Redis database instance and reads it back instantly.',
+  // })
+  // @ApiOkResponse({
+  //   description: 'Redis is working cleanly.',
+  //   type: String,
+  //   example: 'world',
+  // })
+  // @Get('redis-test')
+  // async testRedis() {
+  //   const redis = this.redisService.getClient();
 
-    await redis.set('hello', 'world');
+  //   await redis.set('hello', 'world');
 
-    return await redis.get('hello');
-  }
+  //   return await redis.get('hello');
+  // }
 }
