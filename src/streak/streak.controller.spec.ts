@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StreakController } from './streak.controller';
+import { StreakService } from './streak.service';
 
 describe('StreakController', () => {
   let controller: StreakController;
@@ -7,6 +8,14 @@ describe('StreakController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [StreakController],
+      providers: [
+        {
+          provide: StreakService,
+          useValue: {
+            updateStreak: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<StreakController>(StreakController);

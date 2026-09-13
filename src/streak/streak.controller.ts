@@ -24,6 +24,7 @@ import { StreakService } from './streak.service';
 export class StreakController {
   constructor(private readonly streakService: StreakService) {}
 
+  //* Update streak
   @ApiOperation({
     summary: 'Record daily user activity to increment or reset activity streak',
     description:
