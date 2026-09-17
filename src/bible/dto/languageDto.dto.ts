@@ -45,6 +45,9 @@ export class LocalizedVerseDto {
     description: 'The verse content text',
   })
   text!: string;
+
+  @ApiProperty({ example: 17031004 })
+  verseId!: number;
 }
 
 //* The structural data shape when NO lang is passed (default fallback containing both)
@@ -71,6 +74,9 @@ export class DualLanguageVerseDto {
     example: 'In the beginning God created the heaven and the earth.',
   })
   text_en!: string;
+
+  @ApiProperty({ example: 17031004 })
+  verseId!: number;
 }
 
 //* Combined Wrapper Response using Swagger's 'oneOf' schema mapping matrix

@@ -56,6 +56,7 @@ export class BibleService {
       this.en.Book[bookIndex].Chapter[chapterIndex].Verse[verseIndex];
 
     const decoded = this.decodeVerseId(bnVerse.Verseid);
+    const verseId = parseInt(bnVerse.Verseid);
 
     return {
       book_bn: BOOK_NAMES_BN[bookIndex],
@@ -64,6 +65,7 @@ export class BibleService {
       verse: decoded.verse,
       text_bn: bnVerse.Verse,
       text_en: enVerse.Verse,
+      verseId: verseId,
     };
   }
 
