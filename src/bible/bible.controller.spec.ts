@@ -14,7 +14,7 @@ describe('BibleController', () => {
           useValue: {
             getAllVerses: jest.fn(),
             getRandomVerse: jest.fn(),
-            getVerseById: jest.fn(),
+            searchVerses: jest.fn(),
           },
         },
       ],

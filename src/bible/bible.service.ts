@@ -187,4 +187,64 @@ export class BibleService {
       this.logger.error('Daily verse error: ', error);
     }
   }
+
+  //* Search verses by keyword or phrase
+  searchVerses(query: string, lang: string = 'both', limit: number = 10) {
+    //? Guard clause: If search box is empty, return an empty array immediately
+    if (!query || query.trim() === '') {
+      return { success: true, data: [] };
+    }
+
+    //? Normalize query to lowercase to make the search case-insensitive
+    const searchTerm = query.toLowerCase().trim();
+    const results: any[] = [];
+    const langSpecific: any[] = [];
+
+    const books = this.bn.Book;
+
+    //? Loop through books, chapters, and verses to find matches
+    //? Nested loops: Iterate through books -> chapters -> verses
+    for (let bIndex = 0; bIndex < books.length; bIndex++) {
+      const book = books[bIndex];
+      for (let cIndex = 0; cIndex < book.Chapter.length; cIndex++) {
+        const chapter = book.Chapter[cIndex];
+        for (let vIndex = 0; vIndex < chapter.Verse.length; vIndex++) {
+          //?/ Fetch the unified verse object using your existing helper
+          const verse = this.getVerseByIndex(bIndex, cIndex, vIndex);
+
+          //? Check if query matches English or Bengali text
+          const matchesEn = verse.text_en.toLowerCase().includes(searchTerm);
+          const matchesBn = verse.text_bn.toLowerCase().includes(searchTerm);
+
+          if (matchesEn || matchesBn) {
+            //? Format text based on requested language (en, bn, or both)
+            const formatted = this.formatByLang(verse, lang);
+
+            langSpecific.push(formatted);
+
+            //? Explicitly attach the index metadata we need!
+            // results.push({
+            //   ...formatted,
+            //   bookIndex: bIndex,
+            //   chapterIndex: cIndex,
+            //   verseIndex: vIndex,
+            // });
+            //? Push the raw verse directly without formatByLang
+            results.push(verse);
+
+            //? Limit results to keep response payload lightweight for extension popup
+            //? Performance guard: Stop searching once we hit the limit (default 10 results)
+            if (results.length >= limit) {
+              return { success: true, data: results, formatted: langSpecific };
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      success: true,
+      data: results,
+    };
+  }
 }
