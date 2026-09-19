@@ -84,4 +84,38 @@ export class BibleController {
   getRandomVerse(@Query() query: LanguageDto) {
     return this.bibleService.getRandomVerse(query.lang);
   }
+
+  //* Search verse
+  @ApiOperation({
+    summary: 'Search bible verses by keyword',
+    description:
+      'Searches through English and Bengali verses for keyword matches.',
+  })
+  @ApiOkResponse({
+    description: 'Search results fetched successfully.',
+    type: BibleVerseResponseDto,
+    schema: {
+      //? Explicitly override the 'data' property schema to show the union
+      allOf: [
+        { $ref: getSchemaPath(BibleVerseResponseDto) },
+        {
+          properties: {
+            data: {
+              oneOf: [
+                { $ref: getSchemaPath(LocalizedVerseDto) },
+                { $ref: getSchemaPath(DualLanguageVerseDto) },
+              ],
+            },
+          },
+        },
+      ],
+    },
+  })
+  @Get('search')
+  searchVerses(
+    @Query('q') query: string,
+    @Query('lang') lang: string = 'both',
+  ) {
+    return this.bibleService.searchVerses(query, lang);
+  }
 }
