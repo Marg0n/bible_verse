@@ -22,7 +22,10 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
 import { RegisterDto } from './dto/register.dto';
-import { AuthResponseDto } from './dto/swaggerAuthResponse.dto';
+import {
+  AuthResponseDto,
+  RegAuthResponseDto,
+} from './dto/swaggerAuthResponse.dto';
 import type { AuthUser } from './interfaces/auth-user.interface';
 import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
@@ -35,6 +38,7 @@ import {
   ResetPasswordDto,
   ResetPasswordResponseDto,
 } from './dto/reset-password.dto';
+import { Public } from '../common/decorators/public.decorator';
 
 @ApiTags('Authentication')
 @ApiBearerAuth('JWT-auth')
@@ -56,7 +60,7 @@ export class AuthController {
     description: 'Email already exists',
   })
   @ApiResponse({
-    type: AuthResponseDto,
+    type: RegAuthResponseDto,
   })
   @Throttle({
     default: {
@@ -64,6 +68,7 @@ export class AuthController {
       ttl: 60000, //? 60 * 10000 = 60s
     },
   })
+  @Public()
   @Post('register')
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto.email, dto.password);
@@ -90,6 +95,7 @@ export class AuthController {
       ttl: 60000,
     },
   })
+  @Public()
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto.email!, dto.password!);
@@ -112,6 +118,7 @@ export class AuthController {
       ttl: 60000,
     },
   })
+  @Public()
   @Post('refresh')
   refreshToken(@Body() dto: RefreshTokenDto) {
     return this.authService.refreshToken(dto.refreshToken);
@@ -138,6 +145,7 @@ export class AuthController {
       ttl: 30000,
     },
   })
+  @Public()
   @Post('forgot-password')
   forgotPassword(@Body() dto: ForgotPasswordDto) {
     return this.authService.forgotPassword(dto.email);
@@ -158,6 +166,7 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: 'Invalid or expired OTP',
   })
+  @Public()
   @Post('verify-otp')
   verifyOtp(@Body() dto: VerifyOtpDto) {
     return this.authService.verifyOtp(dto.email, dto.otp);
@@ -178,6 +187,7 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: 'Invalid or expired OTP',
   })
+  @Public()
   @Post('reset-password')
   resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto.email, dto.otp, dto.newPassword);

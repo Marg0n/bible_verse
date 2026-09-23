@@ -26,6 +26,7 @@ import { validate } from './config/validation';
 import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
 import mailConfig from './config/mail.config';
+import { JwtAuthGuard } from './auth/jwt-auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -61,6 +62,10 @@ import mailConfig from './config/mail.config';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
     },
   ],
   // controllers: [AppController, StreakController],

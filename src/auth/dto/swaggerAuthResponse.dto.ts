@@ -32,3 +32,13 @@ export class AuthResponseDto {
   @ApiProperty({ type: AuthPayloadDto }) //?Tells Swagger exactly how to parse this complex nested tree
   data!: AuthPayloadDto;
 }
+export class RegAuthResponseDto {
+  @ApiProperty({ example: true })
+  success!: boolean;
+
+  @ApiProperty({ example: 'User Registered successfully.' })
+  description!: string;
+
+  @ApiProperty({ type: AuthPayloadDto }) //?Tells Swagger exactly how to parse this complex nested tree
+  data!: AuthPayloadDto;
+}
