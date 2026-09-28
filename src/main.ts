@@ -12,6 +12,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ThrottlerFilter } from './common/filters/throttler.filter';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,12 +20,15 @@ async function bootstrap() {
   const port = process.env.PORT ?? 3000;
   const logger = new Logger('Bootstrap');
 
+  //* Cookie parser: Parses the Cookie header so req.cookies is available
+  app.use(cookieParser());
+
   //* CORS
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') ?? '*',
     // origin: configService.get<string[]>('app.allowedOrigins'),
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    credentials: true,
+    credentials: true, //? Required for httpOnly cookies to work cross-origin
   });
 
   //* Global pipes
