@@ -4,6 +4,9 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
+  Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -17,28 +20,28 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
+import type { Request, Response } from 'express';
+import { Public } from '../common/decorators/public.decorator';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
-import { LoginDto } from './dto/login.dto';
-import { RefreshTokenDto } from './dto/refreshToken.dto';
-import { RegisterDto } from './dto/register.dto';
-import {
-  AuthResponseDto,
-  RegAuthResponseDto,
-} from './dto/swaggerAuthResponse.dto';
-import type { AuthUser } from './interfaces/auth-user.interface';
-import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
-import { Throttle } from '@nestjs/throttler';
 import {
   ForgotPasswordDto,
   ForgotPasswordResponseDto,
 } from './dto/forgot-password.dto';
-import { VerifyOtpDto, VerifyOtpResponseDto } from './dto/verify-otp.dto';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import {
   ResetPasswordDto,
   ResetPasswordResponseDto,
 } from './dto/reset-password.dto';
-import { Public } from '../common/decorators/public.decorator';
+import {
+  AuthResponseDto,
+  RegAuthResponseDto,
+} from './dto/swaggerAuthResponse.dto';
+import { VerifyOtpDto, VerifyOtpResponseDto } from './dto/verify-otp.dto';
+import type { AuthUser } from './interfaces/auth-user.interface';
+import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
 
 @ApiTags('Authentication')
 @ApiBearerAuth('JWT-auth')
@@ -97,8 +100,32 @@ export class AuthController {
   })
   @Public()
   @Post('login')
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto.email!, dto.password!);
+  async login(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    // return this.authService.login(dto.email!, dto.password!);
+    //? call the service
+    const result = await this.authService.login(dto.email!, dto.password!);
+
+    //? grab the .data part
+    const { user, access_token, refresh_token } = result.data;
+    const { description } = result;
+
+    //? Store refresh token in an httpOnly cookie (invisible to JS → XSS-safe)
+    res.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    return {
+      success: true,
+      description: description || 'User logged in successfully.',
+      data: { user, access_token }, //! no refresh_token in the body
+    };
   }
 
   //* Refresh token
@@ -120,8 +147,35 @@ export class AuthController {
   })
   @Public()
   @Post('refresh')
-  refreshToken(@Body() dto: RefreshTokenDto) {
-    return this.authService.refreshToken(dto.refreshToken);
+  async refreshToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    // return this.authService.refreshToken(dto.refreshToken);
+
+    //? Read from cookie (no body needed)
+    const refreshToken = req.cookies['refresh_token'] as string;
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('No refresh token found');
+    }
+
+    const result = await this.authService.refreshToken(refreshToken);
+    const { access_token, refresh_token } = result.data;
+
+    //? Rotate: overwrite the cookie with the NEW refresh token
+    res.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    return {
+      success: true,
+      data: { access_token },
+    };
   }
 
   //* Forgot password
@@ -206,7 +260,21 @@ export class AuthController {
     description: 'Unauthorized',
   })
   @Post('logout')
-  logout(@CurrentUser() user: AuthUser) {
-    return this.authService.logout(user.userId);
+  async logout(
+    @CurrentUser() user: AuthUser,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    // return this.authService.logout(user.userId);
+    const result = await this.authService.logout(user.userId);
+
+    //? Remove the httpOnly cookie
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    });
+
+    return result;
   }
 }
