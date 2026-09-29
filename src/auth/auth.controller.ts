@@ -116,8 +116,8 @@ export class AuthController {
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax', //? Blocks the cookie on cross-site POST/PUT/DELETE requests (CSRF protection), while still allowing it on top-level GET navigation
+      maxAge: 7 * 24 * 60 * 60 * 1000, //? 7 days
       path: '/',
     });
 
@@ -168,7 +168,7 @@ export class AuthController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000, //? 7 days
       path: '/',
     });
 
