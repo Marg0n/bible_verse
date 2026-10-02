@@ -132,9 +132,19 @@ export class BibleService {
   }
 
   //* get daily verse (Redis used)
-  async getDailyVerse(lang: string = 'both') {
+  async getDailyVerse(lang: string = 'both', timeZone: string = 'UTC') {
     try {
-      const today = new Date().toISOString().split('T')[0];
+      //? UTC time
+      // const today = new Date().toISOString().split('T')[0];
+
+      //? Local date for the user's timezone
+      const today = new Intl.DateTimeFormat('en-CA', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(new Date());
+      // e.g. "2026-10-02" in America/New_York
 
       const redis = this.redisService.getClient();
 
@@ -149,7 +159,8 @@ export class BibleService {
 
         return JSON.parse(cached);
       }
-      this.logger.log(`BIBLE CACHE HIT: ${cacheKey}`);
+      //? If missed cache
+      this.logger.log(`BIBLE CACHE MISS: ${cacheKey}`);
 
       const books = this.bn.Book;
 
