@@ -24,6 +24,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR; //? 500
 
+    if (status === 400) {
+      console.log(
+        'VALIDATION ERRORS:',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        JSON.stringify(exception),
+      );
+    }
+
     let message: unknown = 'Internal server error';
 
     //? Exclude Favicon from Logging
