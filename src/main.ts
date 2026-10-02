@@ -36,7 +36,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true, //? strips unknown fields
       forbidNonWhitelisted: true, //? throws error if extra fields sent
-      transform: true,
+      transform: true, //? critical for @Type() to work
     }),
   );
 
