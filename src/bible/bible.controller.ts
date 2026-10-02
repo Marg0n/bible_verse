@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Headers, Query } from '@nestjs/common';
 import { BibleService } from './bible.service';
 import {
   BibleVerseResponseDto,
@@ -49,8 +49,11 @@ export class BibleController {
   })
   @ApiBadRequestResponse({ description: 'Invalid query parameters passed.' })
   @Get()
-  getDailyVerse(@Query() query: LanguageDto) {
-    return this.bibleService.getDailyVerse(query.lang);
+  getDailyVerse(
+    @Query() query: LanguageDto,
+    @Headers('x-timezone') tz = 'UTC',
+  ) {
+    return this.bibleService.getDailyVerse(query.lang, tz);
   }
 
   //* Get Random verse
