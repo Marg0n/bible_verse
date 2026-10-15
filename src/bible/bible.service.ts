@@ -200,10 +200,15 @@ export class BibleService {
   }
 
   //* Search verses by keyword or phrase
-  searchVerses(query: string, lang: string = 'both', limit: number = 10) {
+  searchVerses(
+    query: string,
+    lang: string = 'both',
+    limit: number = 10,
+    targetBookIndex?: number, //? e.g., 42 for John "John"
+  ) {
     //? Guard clause: If search box is empty, return an empty array immediately
     if (!query || query.trim() === '') {
-      return { success: true, data: [] };
+      return { success: true, data: [], formatted: [] };
     }
 
     //? Normalize query to lowercase to make the search case-insensitive
@@ -213,19 +218,28 @@ export class BibleService {
 
     const books = this.bn.Book;
 
+    //? OPTIMIZATION: If a book index is provided, start and end only at that book!
+    const startBook = targetBookIndex !== undefined ? targetBookIndex : 0;
+    const endBook =
+      targetBookIndex !== undefined ? targetBookIndex + 1 : books.length;
+
     //? Loop through books, chapters, and verses to find matches
     //? Nested loops: Iterate through books -> chapters -> verses
-    for (let bIndex = 0; bIndex < books.length; bIndex++) {
+    for (let bIndex = startBook; bIndex < endBook; bIndex++) {
       const book = books[bIndex];
+      if (!book) continue; //? Prevents invalid targetBookIndex or missing book object
+
       for (let cIndex = 0; cIndex < book.Chapter.length; cIndex++) {
         const chapter = book.Chapter[cIndex];
+
         for (let vIndex = 0; vIndex < chapter.Verse.length; vIndex++) {
           //?/ Fetch the unified verse object using your existing helper
           const verse = this.getVerseByIndex(bIndex, cIndex, vIndex);
+          if (!verse) continue; //? Prevents runtime errors if this.getVerseByIndex returns undefined for an out-of-bounds index.
 
           //? Check if query matches English or Bengali text
-          const matchesEn = verse.text_en.toLowerCase().includes(searchTerm);
-          const matchesBn = verse.text_bn.toLowerCase().includes(searchTerm);
+          const matchesEn = verse.text_en?.toLowerCase().includes(searchTerm);
+          const matchesBn = verse.text_bn?.toLowerCase().includes(searchTerm);
 
           if (matchesEn || matchesBn) {
             //? Format text based on requested language (en, bn, or both)
@@ -256,6 +270,7 @@ export class BibleService {
     return {
       success: true,
       data: results,
+      formatted: langSpecific,
     };
   }
 }
