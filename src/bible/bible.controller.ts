@@ -11,6 +11,7 @@ import {
   ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   getSchemaPath,
 } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
@@ -114,11 +115,50 @@ export class BibleController {
       ],
     },
   })
+  //? Add Swagger Query Parameter Documentation for the options
+  @ApiQuery({
+    name: 'q',
+    required: true,
+    type: String,
+    description: 'Search keyword',
+  })
+  @ApiQuery({
+    name: 'lang',
+    required: false,
+    enum: ['en', 'bn', 'both'],
+    default: 'both',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    default: 10,
+    description: 'Max number of results to return',
+  })
+  @ApiQuery({
+    name: 'bookIndex',
+    required: false,
+    type: Number,
+    description:
+      'Optional 0-based book index to search within a specific book (e.g. 42 for John)',
+  })
   @Get('search')
   searchVerses(
     @Query('q') query: string,
     @Query('lang') lang: string = 'both',
+    @Query('limit') limit?: string,
+    @Query('bookIndex') bookIndex?: string,
   ) {
-    return this.bibleService.searchVerses(query, lang);
+    //? Parse query parameters safely to numbers (NestJS Query params come in as strings)
+    const parsedLimit = limit ? parseInt(limit, 10) : 10;
+    const parsedBookIndex =
+      bookIndex !== undefined ? parseInt(bookIndex, 10) : undefined;
+
+    return this.bibleService.searchVerses(
+      query,
+      lang,
+      parsedLimit,
+      parsedBookIndex,
+    );
   }
 }
