@@ -56,7 +56,8 @@ export class BibleService {
       this.en.Book[bookIndex].Chapter[chapterIndex].Verse[verseIndex];
 
     const decoded = this.decodeVerseId(bnVerse.Verseid);
-    const verseId = parseInt(bnVerse.Verseid);
+    // const verseId = parseInt(bnVerse.Verseid);
+    const verseId = bnVerse.Verseid;
 
     return {
       book_bn: BOOK_NAMES_BN[bookIndex],
@@ -72,6 +73,12 @@ export class BibleService {
   //* Get verse by verse ID
   getVerseById(verseId: string) {
     const decoded = this.decodeVerseId(verseId);
+
+    //? Ensure your data source is actually loaded/defined before trying to read properties from it
+    if (!decoded) {
+      console.error('Bible data is not loaded or missing property!');
+      return null; //? or throw a handled exception
+    }
 
     return this.getVerseByIndex(
       decoded.bookIndex,
