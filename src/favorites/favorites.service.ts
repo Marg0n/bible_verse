@@ -49,19 +49,27 @@ export class FavoritesService {
       });
 
       //? returns decoded verse
-      const result = favorites.map((fav) => ({
-        ...fav,
-        verse: this.bibleService.getVerseById(fav.verseId),
-      }));
+      const result = favorites
+        .map((fav) => {
+          // ...fav,
+          // verse: this.bibleService.getVerseById(fav.verseId),
+          try {
+            const verse = this.bibleService.getVerseById(fav.verseId);
+            return verse ? { ...fav, verse } : null;
+          } catch {
+            return null; //? Skip invalid verse lookups safely
+          }
+        })
+        .filter(Boolean); //? Removes nulls;
 
       return {
         success: true,
         description: 'Favorites data successfully retrieved',
-        data: result,
+        data: result ?? [],
       };
     } catch (error: any) {
-      // this.logger.error('get fav: ', error);
-      throw new NotFoundException('Getting issues to get favorites');
+      this.logger.error('get fav: ', error);
+      throw new NotFoundException(`Getting issues to get favorites: ${error}`);
     }
   }
 

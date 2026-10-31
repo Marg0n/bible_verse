@@ -23,5 +23,5 @@ export type VerseData = {
   chapter: number;
   verse: number;
   date?: string;
-  verseId: number;
+  verseId: string;
 };

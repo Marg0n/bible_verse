@@ -115,8 +115,10 @@ export class AuthController {
     //? Store refresh token in an httpOnly cookie (invisible to JS → XSS-safe)
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', //? Blocks the cookie on cross-site POST/PUT/DELETE requests (CSRF protection), while still allowing it on top-level GET navigation
+      // secure: process.env.NODE_ENV === 'production',
+      secure: true, //? CHANGED: Must be true because SameSite=None requires Secure (Chrome treats localhost as a secure context)
+      sameSite: 'none', //? 🔄 CHANGED: Required for Chrome Extensions (chrome-extension://) because requests to localhost are treated as cross-site
+      // sameSite: 'lax', //? Blocks the cookie on cross-site POST/PUT/DELETE requests (CSRF protection), while still allowing it on top-level GET navigation
       maxAge: 7 * 24 * 60 * 60 * 1000, //? 7 days
       path: '/',
     });
@@ -166,8 +168,8 @@ export class AuthController {
     //? Rotate: overwrite the cookie with the NEW refresh token
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000, //? 7 days
       path: '/',
     });
@@ -270,8 +272,10 @@ export class AuthController {
     //? Remove the httpOnly cookie
     res.clearCookie('refresh_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      // secure: process.env.NODE_ENV === 'production',
+      // sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       path: '/',
     });
 

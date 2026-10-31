@@ -76,9 +76,9 @@ export class FavoritesController {
   @HttpCode(HttpStatus.OK)
   @Delete(':verseId')
   removeFavorites(
-    @Param('verseId') dto: FavoriteDto,
+    @Param('verseId') verseId: string,
     @CurrentUser() user: AuthUser,
   ) {
-    return this.favoriteService.removeFavorites(user.userId, dto.verseId);
+    return this.favoriteService.removeFavorites(user.userId, verseId);
   }
 }
