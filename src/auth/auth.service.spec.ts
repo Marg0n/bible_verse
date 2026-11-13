@@ -74,6 +74,7 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
   });
 
+  //* Testing new successful user registration
   it('should register a new user successfully', async () => {
     const email = 'test@mail.com';
     const password = 'Password123!';
@@ -135,5 +136,27 @@ describe('AuthService', () => {
     //? Check returned tokens
     expect(result.data.access_token).toBe('access-token');
     expect(result.data.refresh_token).toBe('refresh-token');
+  });
+
+  //* Testing reject user registration
+  it('should reject registration if the email already exists', async () => {
+    const email = 'existing@mail.com';
+    const password = 'Password123!';
+
+    prismaMock.user.findUnique.mockResolvedValue({
+      id: 'existing-user-123',
+      email,
+      password: 'some-hashed-password',
+    });
+
+    await expect(service.register(email, password)).rejects.toThrow(
+      `Email ${email} already exists!`,
+    );
+
+    //? User creation must never happen
+    expect(prismaMock.user.create).not.toHaveBeenCalled();
+
+    //? Token generation must never happen
+    expect(jwtMock.signAsync).not.toHaveBeenCalled();
   });
 });
