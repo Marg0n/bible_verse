@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   Logger,
   ServiceUnavailableException,
@@ -91,6 +92,15 @@ export class AuthService {
         //? Foreign key failure / DB down
         throw new ServiceUnavailableException('Database connection lost');
       }
+
+      //? Preserve intentional HTTP exceptions
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      //? Handle unexpected errors
+      this.logger.error('Register error: ', error);
+
       throw new BadRequestException('User Creation failed');
     }
   }
