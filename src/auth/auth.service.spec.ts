@@ -79,10 +79,13 @@ describe('AuthService', () => {
     const email = 'test@mail.com';
     const password = 'Password123!';
 
+    //? Create a real bcrypt hash for the test
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const createdUser = {
       id: 'user-123',
       email,
-      password: 'hashed-password',
+      password: hashedPassword,
       createdAt: new Date(),
     };
 
@@ -158,5 +161,66 @@ describe('AuthService', () => {
 
     //? Token generation must never happen
     expect(jwtMock.signAsync).not.toHaveBeenCalled();
+  });
+
+  //* Testing successful user login
+  it('should login a user successfully', async () => {
+    const email = 'LOGIN@mail.com';
+    const normalizedEmail = 'login@mail.com';
+    const password = 'Password123!';
+
+    //? Create a real bcrypt hash for the test
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const existingUser = {
+      id: 'user-123',
+      email: normalizedEmail,
+      password: hashedPassword,
+      createdAt: new Date(),
+    };
+
+    //? Mock finding the existing user
+    prismaMock.user.findUnique.mockResolvedValue(existingUser);
+
+    //? Mock JWT generation
+    jwtMock.signAsync
+      .mockResolvedValueOnce('new-access-token')
+      .mockResolvedValueOnce('new-refresh-token');
+
+    //? Mock saving the hashed refresh token
+    prismaMock.user.update.mockResolvedValue({
+      ...existingUser,
+      refreshToken: 'hashed-refresh-token',
+    });
+
+    const result = await service.login(email, password);
+
+    //? Check successful response
+    expect(result.success).toBe(true);
+    expect(result.description).toBe('User login successful');
+
+    //? Check email normalization
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: { email: normalizedEmail },
+    });
+
+    //? Check password is not exposed
+    expect(result.data.user).not.toHaveProperty('password');
+
+    //? Check JWT generation
+    expect(jwtMock.signAsync).toHaveBeenCalledTimes(2);
+
+    //? Check refresh token storage
+    const updateCall = prismaMock.user.update.mock.calls[0][0];
+
+    expect(updateCall.where.id).toBe(existingUser.id);
+
+    expect(
+      await bcrypt.compare('new-refresh-token', updateCall.data.refreshToken),
+    ).toBe(true);
+
+    // Check returned tokens
+    expect(result.data.access_token).toBe('new-access-token');
+    expect(result.data.refresh_token).toBe('new-refresh-token');
   });
 });
