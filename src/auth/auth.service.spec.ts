@@ -223,4 +223,29 @@ describe('AuthService', () => {
     expect(result.data.access_token).toBe('new-access-token');
     expect(result.data.refresh_token).toBe('new-refresh-token');
   });
+
+  //* Testing Login with incorrect password
+  it('should reject login with an incorrect password', async () => {
+    const email = 'test@example.com';
+    const correctPassword = 'Password123!';
+    const incorrectPassword = 'WrongPassword123!';
+
+    const hashedPassword = await bcrypt.hash(correctPassword, 10);
+
+    prismaMock.user.findUnique.mockResolvedValue({
+      id: 'user-123',
+      email,
+      password: hashedPassword,
+    });
+
+    await expect(service.login(email, incorrectPassword)).rejects.toThrow(
+      'Invalid credentials',
+    );
+
+    //? No JWT should be generated
+    expect(jwtMock.signAsync).not.toHaveBeenCalled();
+
+    //? No refresh token should be saved
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
 });

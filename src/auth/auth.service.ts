@@ -199,6 +199,14 @@ export class AuthService {
       }
       // throw error;
 
+      //? Preserve intentional HTTP exceptions
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      //? Handle unexpected errors
+      this.logger.error('Login error: ', error);
+
       throw new BadRequestException('User Login failed');
     }
   }
