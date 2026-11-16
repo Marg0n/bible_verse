@@ -155,7 +155,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new BadRequestException(`Invalid credentials for ${mail}`);
+        throw new BadRequestException(`Invalid credentials`);
         // this.logger.warn(`Invalid credentials for ${mail}`);
         // return {
         //   success: false,

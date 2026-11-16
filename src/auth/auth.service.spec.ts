@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { BadRequestException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -246,6 +247,24 @@ describe('AuthService', () => {
     expect(jwtMock.signAsync).not.toHaveBeenCalled();
 
     //? No refresh token should be saved
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
+
+  //* Testing Login with non user
+  it('should reject login if the user does not exist', async () => {
+    const email = 'unknown@example.com';
+    const password = 'Password123!';
+
+    prismaMock.user.findUnique.mockResolvedValue(null);
+
+    await expect(service.login(email, password)).rejects.toThrow(
+      new BadRequestException('Invalid credentials'),
+    );
+
+    //? No token generation
+    expect(jwtMock.signAsync).not.toHaveBeenCalled();
+
+    //? No database update
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 });
