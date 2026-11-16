@@ -155,7 +155,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new BadRequestException(`Invalid credentials for ${mail}`);
+        throw new BadRequestException(`Invalid credentials`);
         // this.logger.warn(`Invalid credentials for ${mail}`);
         // return {
         //   success: false,
@@ -198,6 +198,14 @@ export class AuthService {
         throw new ServiceUnavailableException('Database connection lost');
       }
       // throw error;
+
+      //? Preserve intentional HTTP exceptions
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      //? Handle unexpected errors
+      this.logger.error('Login error: ', error);
 
       throw new BadRequestException('User Login failed');
     }
