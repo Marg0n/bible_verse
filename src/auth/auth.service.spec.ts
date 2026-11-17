@@ -267,4 +267,84 @@ describe('AuthService', () => {
     //? No database update
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
+
+  //* Testing the successful refresh-token test
+
+  it('should refresh access and refresh tokens successfully', async () => {
+    const refreshToken = 'valid-refresh-token';
+    const newAccessToken = 'new-access-token';
+    const newRefreshToken = 'new-refresh-token';
+
+    const user = {
+      id: 'user-123',
+      email: 'test@example.com',
+      password: 'hashed-password',
+      refreshToken: await bcrypt.hash(refreshToken, 10),
+    };
+
+    //? Arrange: Mock the refresh JWT secret
+    configMock.get.mockReturnValue('test-refresh-secret');
+
+    //? Arrange: Mock JWT verification
+    jwtMock.verifyAsync.mockResolvedValue({
+      sub: user.id,
+      email: user.email,
+    });
+
+    //? Arrange: Mock finding the user
+    prismaMock.user.findUnique.mockResolvedValue(user);
+
+    //? Arrange: Mock generating new tokens
+    jwtMock.signAsync
+      .mockResolvedValueOnce(newAccessToken)
+      .mockResolvedValueOnce(newRefreshToken);
+
+    //? Arrange: Mock database update
+    prismaMock.user.update.mockResolvedValue({
+      ...user,
+      refreshToken: 'new-hashed-refresh-token',
+    });
+
+    //? Act
+    const result = await service.refreshToken(refreshToken);
+
+    //? Assert: JWT verification
+    expect(jwtMock.verifyAsync).toHaveBeenCalledWith(refreshToken, {
+      secret: 'test-refresh-secret',
+    });
+
+    //? Assert: User lookup
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: { id: user.id },
+    });
+
+    //? Assert: Generate new access and refresh tokens
+    expect(jwtMock.signAsync).toHaveBeenCalledTimes(2);
+
+    //? Assert: Save the rotated refresh token
+    expect(prismaMock.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: user.id },
+        data: {
+          refreshToken: expect.any(String),
+        },
+      }),
+    );
+
+    //? Confirm the saved token is actually hashed
+    const updateCall = prismaMock.user.update.mock.calls[0][0];
+
+    expect(
+      await bcrypt.compare(newRefreshToken, updateCall.data.refreshToken),
+    ).toBe(true);
+
+    //? Assert: Response
+    expect(result).toEqual({
+      success: true,
+      data: {
+        access_token: newAccessToken,
+        refresh_token: newRefreshToken,
+      },
+    });
+  });
 });
