@@ -269,7 +269,6 @@ describe('AuthService', () => {
   });
 
   //* Testing the successful refresh-token test
-
   it('should refresh access and refresh tokens successfully', async () => {
     const refreshToken = 'valid-refresh-token';
     const newAccessToken = 'new-access-token';
