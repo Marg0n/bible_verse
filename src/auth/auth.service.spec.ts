@@ -346,4 +346,31 @@ describe('AuthService', () => {
       },
     });
   });
+
+  //* Testing while sending an invalid refresh token
+  it('should reject an invalid refresh token', async () => {
+    const refreshToken = 'invalid-refresh-token';
+
+    //? ARRANGE
+    jwtMock.verifyAsync.mockRejectedValue(new Error('Invalid token'));
+
+    //? ACT & ASSERT
+    await expect(service.refreshToken(refreshToken)).rejects.toThrow(
+      'Invalid refresh token',
+    );
+
+    //? JWT verification was attempted
+    expect(jwtMock.verifyAsync).toHaveBeenCalledWith(refreshToken, {
+      secret: 'test-refresh-secret',
+    });
+
+    //? No database lookup should happen
+    expect(prismaMock.user.findUnique).not.toHaveBeenCalled();
+
+    //? No new tokens should be generated
+    expect(jwtMock.signAsync).not.toHaveBeenCalled();
+
+    //? No database update should happen
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
 });
