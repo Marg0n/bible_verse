@@ -373,4 +373,37 @@ describe('AuthService', () => {
     //? No database update should happen
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
+
+  //* Testing Valid JWT, but user doesn't exist
+
+  it('should reject refresh token if user does not exist', async () => {
+    const refreshToken = 'valid-refresh-token';
+
+    //? ARRANGE
+    jwtMock.verifyAsync.mockResolvedValue({
+      sub: 'deleted-user-123',
+      email: 'test@example.com',
+    });
+
+    prismaMock.user.findUnique.mockResolvedValue(null);
+
+    //? ACT & ASSERT
+    await expect(service.refreshToken(refreshToken)).rejects.toThrow(
+      'Invalid refresh token',
+    );
+
+    //? JWT verification should succeed
+    expect(jwtMock.verifyAsync).toHaveBeenCalled();
+
+    //? Database lookup should happen
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: { id: 'deleted-user-123' },
+    });
+
+    //? No tokens should be generated
+    expect(jwtMock.signAsync).not.toHaveBeenCalled();
+
+    //? No database update should happen
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
 });
