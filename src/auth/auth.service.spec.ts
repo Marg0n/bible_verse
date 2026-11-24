@@ -441,4 +441,40 @@ describe('AuthService', () => {
     //? No database update should happen
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
+
+  //* Testing User has no stored refresh token
+  it('should reject refresh token if user has no stored refresh token', async () => {
+    const refreshToken = 'old-refresh-token';
+
+    const user = {
+      id: 'user-123',
+      email: 'test@example.com',
+      password: 'hashed-password',
+      refreshToken: null,
+    };
+
+    //? ARRANGE
+    jwtMock.verifyAsync.mockResolvedValue({
+      sub: user.id,
+      email: user.email,
+    });
+
+    prismaMock.user.findUnique.mockResolvedValue(user);
+
+    //? ACT & ASSERT
+    await expect(service.refreshToken(refreshToken)).rejects.toThrow(
+      'Invalid refresh token',
+    );
+
+    //? User lookup should happen
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: { id: user.id },
+    });
+
+    //? No new tokens should be generated
+    expect(jwtMock.signAsync).not.toHaveBeenCalled();
+
+    //? No database update should happen
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
 });
