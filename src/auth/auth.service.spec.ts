@@ -477,4 +477,36 @@ describe('AuthService', () => {
     //? No database update should happen
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
+
+  //* Testing One final refresh-token test: Database lookup fails
+  it('should reject refresh token if database lookup fails', async () => {
+    const refreshToken = 'valid-refresh-token';
+
+    //? ARRANGE
+    jwtMock.verifyAsync.mockResolvedValue({
+      sub: 'user-123',
+      email: 'test@example.com',
+    });
+
+    prismaMock.user.findUnique.mockRejectedValue(
+      new Error('Database connection lost'),
+    );
+
+    //? ACT & ASSERT
+    await expect(service.refreshToken(refreshToken)).rejects.toThrow(
+      'Invalid refresh token',
+    );
+
+    //? JWT verification should happen
+    expect(jwtMock.verifyAsync).toHaveBeenCalled();
+
+    //? Database lookup should happen
+    expect(prismaMock.user.findUnique).toHaveBeenCalled();
+
+    //? No tokens should be generated
+    expect(jwtMock.signAsync).not.toHaveBeenCalled();
+
+    //? No database update should happen
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
 });
