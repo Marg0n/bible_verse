@@ -40,7 +40,7 @@ describe('AuthService', () => {
   };
 
   const mailMock = {
-    senOtpEmail: jest.fn(),
+    sendOtpEmail: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -508,5 +508,53 @@ describe('AuthService', () => {
 
     //? No database update should happen
     expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
+
+  //* Testing a user requests a password reset, but the email address doesn't exist
+  it('should return a generic response if user does not exist', async () => {
+    const email = 'UNKNOWN@example.com';
+    const normalizedEmail = 'unknown@example.com';
+
+    //? ARRANGE
+    const redisClientMock = {
+      exists: jest.fn().mockResolvedValue(0),
+      ttl: jest.fn(),
+      set: jest.fn(),
+      del: jest.fn(),
+    };
+
+    redisMock.getClient.mockReturnValue(redisClientMock);
+
+    prismaMock.user.findUnique.mockResolvedValue(null);
+
+    //? ACT
+    const result = await service.forgotPassword(email);
+
+    //? ASSERT
+
+    //? Should check Redis cooldown
+    expect(redisClientMock.exists).toHaveBeenCalledWith(
+      `otp-cooldown:${normalizedEmail}`,
+    );
+
+    //? Should search for the normalized email
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: { email: normalizedEmail },
+    });
+
+    //? Should return a generic response
+    expect(result).toEqual({
+      success: true,
+      message: 'If an account exists for this email, an OTP has been sent.',
+    });
+
+    //? Should not send an email
+    expect(mailMock.sendOtpEmail).not.toHaveBeenCalled();
+
+    //? Should not store an OTP or set a cooldown
+    expect(redisClientMock.set).not.toHaveBeenCalled();
+
+    //? Should not delete or modify OTP attempts
+    expect(redisClientMock.del).not.toHaveBeenCalled();
   });
 });
