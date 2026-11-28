@@ -557,4 +557,72 @@ describe('AuthService', () => {
     //? Should not delete or modify OTP attempts
     expect(redisClientMock.del).not.toHaveBeenCalled();
   });
+
+  //* Testing he user exists, so an OTP must be generated, stored in Redis, and emailed
+  it('should send OTP successfully if user exists', async () => {
+    const email = 'TEST@example.com';
+    const normalizedEmail = 'test@example.com';
+
+    const user = {
+      id: 'user-123',
+      email: normalizedEmail,
+      password: 'hashed-password',
+      refreshToken: null,
+    };
+
+    //? ARRANGE
+    const redisClientMock = {
+      exists: jest.fn().mockResolvedValue(0),
+      ttl: jest.fn(),
+      set: jest.fn().mockResolvedValue('OK'),
+      del: jest.fn().mockResolvedValue(1),
+    };
+
+    redisMock.getClient.mockReturnValue(redisClientMock);
+
+    prismaMock.user.findUnique.mockResolvedValue(user);
+
+    mailMock.sendOtpEmail.mockResolvedValue(undefined);
+
+    //? ACT
+    const result = await service.forgotPassword(email);
+
+    //? ASSERT
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: { email: normalizedEmail },
+    });
+
+    expect(redisClientMock.set).toHaveBeenCalledTimes(2);
+
+    const otpSetCall = redisClientMock.set.mock.calls[0];
+    const cooldownSetCall = redisClientMock.set.mock.calls[1];
+
+    const generatedOtp = otpSetCall[1];
+
+    expect(otpSetCall).toEqual([
+      `otp:${normalizedEmail}`,
+      expect.stringMatching(/^\d{6}$/),
+      { EX: 300 },
+    ]);
+
+    expect(redisClientMock.del).toHaveBeenCalledWith(
+      `otp-attempts:${normalizedEmail}`,
+    );
+
+    expect(mailMock.sendOtpEmail).toHaveBeenCalledWith(
+      normalizedEmail,
+      generatedOtp,
+    );
+
+    expect(cooldownSetCall).toEqual([
+      `otp-cooldown:${normalizedEmail}`,
+      '1',
+      { EX: 60 },
+    ]);
+
+    expect(result).toEqual({
+      success: true,
+      message: 'If an account exists for this email, an OTP has been sent.',
+    });
+  });
 });
